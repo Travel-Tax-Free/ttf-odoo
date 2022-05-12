@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="res_country_common_form" model="ir.ui.view">
+            <field name="name">res_country_common_form</field>
+            <field name="model">res.country</field>
+            <field name="inherit_id" ref="base.view_country_form"/>
+            <field name="arch" type="xml">
+                <field name="code" position="after">
+                    <field name="aeat_allow"/>
+                </field>
+
+            </field>
+        </record>
+
+        <record id="action_res_country_tax" model="ir.actions.act_window">
+            <field name="name">Pais</field>
+            <field name="res_model">res.country</field>
+            <field name="view_mode">tree,form</field>
+<!--            <field name="context">{'default_aeat_allow': True}</field> -->
+        </record>
+
+    </data>
+</odoo>

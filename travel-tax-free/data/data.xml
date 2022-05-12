@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="True">
+        <record id="taxfree_url" model="ir.config_parameter">
+            <field name="key">ttf_url</field>
+            <field name="value">https://test-es.traveltaxfree.com</field>
+        </record>
+
+        <record id="taxfree_user" model="ir.config_parameter">
+            <field name="key">ttf_user</field>
+            <field name="value">abcdefghijklmnopqrstuvwxyz123456789</field>
+        </record>
+
+        <record id="taxfree_password" model="ir.config_parameter">
+            <field name="key">ttf_password</field>
+            <field name="value">987654321zyxwvutsrqponmlkjihgfedcba</field>
+        </record>
+
+        <!-- PAISES -->
+        <function model="res.country" name="_init_country"/>
+
+    </data>
+</odoo>
