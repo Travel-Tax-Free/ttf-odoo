@@ -1,3 +1,3 @@
 from . import res_partner
 from . import res_country
-from . import pos_order
+from . import account_move

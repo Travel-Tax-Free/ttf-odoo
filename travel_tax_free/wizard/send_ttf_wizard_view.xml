@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="taxfree_send_form" model="ir.ui.view">
+        <field name="name">taxfree.send.form</field>
+        <field name="model">taxfree.wizard.sendttf</field>
+        <field name="arch" type="xml">
+            <form string="Selecciona pedido">
+                <sheet>
+                    <group colspan="4" col="2">
+                        <!-- <label string="Hola mundo" />-->
+                    </group>
+                    <footer>
+                        <button string="Cancel" special="cancel"/>
+                        <button string="Next" name="send_taxfree" type="object" colspan="4"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <!--
+    <act_window
+        name="Enviar tax free"
+        res_model="taxfree.wizard.sendttf"
+        binding_model="account.move"
+        binding_views="form"
+        view_mode="form"
+        target="new"
+        view_id="taxfree_send_form"
+        id="taxfree_send_action"
+    /> -->
+
+    <record id="taxfree_send_action2" model="ir.actions.server">
+        <field name="name">Enviar taxfree</field>
+        <field name="type">ir.actions.server</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="state">code</field>
+        <field name="code">action = env['taxfree.wizard.sendttf'].send_taxfree(env.context['active_id'])</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+    </record>
+
+
+</odoo>
+
+

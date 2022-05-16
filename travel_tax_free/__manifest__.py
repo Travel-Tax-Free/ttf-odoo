@@ -11,7 +11,7 @@ Travel Tax Free Integration
     'category': 'Taxfree',
     'depends': [
         'base',
-        'point_of_sale',
+        'account',
     ],
     'data': [
     #    'security/groups.xml',
@@ -20,7 +20,8 @@ Travel Tax Free Integration
         'data/data.xml',
         'views/res_partner_view.xml',
         'views/res_country_view.xml',
-        'views/pos_order_view.xml',
+        'views/account_move_view.xml',
+        'wizard/send_ttf_wizard_view.xml',
     ],
     'installable': True,
 }
