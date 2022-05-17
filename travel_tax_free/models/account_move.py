@@ -28,3 +28,9 @@ class account_move(models.Model):
                return self._generate_code(msg='La factura {} tiene lineas con más de un tipo de IVA')
 
         return self._generate_code()
+
+#class account_move_line(models.Model):
+#    _name = "account.move.line"
+#    _inherit = ["account.move.line"]
+#
+#    serial = fields.Char(string="Serial")

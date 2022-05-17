@@ -6,14 +6,17 @@ from .util import Utils
 _logger = logging.getLogger(__name__)
 
 class TravelClient:
-    def __init__(self, env):
+    def __init__(self, env, format=None):
         self.env = env
 
-        self.user = self.env['ir.config_parameter'].sudo().get_param('ttf_user')
-        self.password = self.env['ir.config_parameter'].sudo().get_param('ttf_password')
-        self.url = self.env['ir.config_parameter'].sudo().get_param('ttf_url')
+        self.user = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_user')
+        self.password = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_password')
+        self.url = 'https://ws-es.traveltaxfree.com' if self.env['ir.config_parameter'].sudo().get_param('base.taxfree_url') == 'produccion' else 'https://demo-es.traveltaxfree.com'
+        self.format = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_format') if not format else format
+        self.attach = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_attach')
+        self.serial = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_serial')
 
-    def generate_taxfree(self, invoice_id, format='ticket'):
+    def generate_taxfree(self, invoice_id):
         invoice = self.env['account.move'].browse(invoice_id)
 
         if not invoice:
@@ -37,12 +40,17 @@ class TravelClient:
             if len(line.tax_ids) == 0:
                 continue
 
-            check_lines.append({
+            check_line = {
                 "name": line.name,
                 "quantity": int(line.quantity),
                 "tax_percent": int(line.tax_ids[0].amount),
-                "total": line.price_total},
-            )
+                "total": line.price_total
+            }
+
+            if self.serial and line.product_id.barcode:
+                check_line['serial'] = line.product_id.barcode
+
+            check_lines.append(check_line)
 
         data = {
             'tourist_name': invoice.partner_id.name,
@@ -50,14 +58,12 @@ class TravelClient:
             'tourist_country': invoice.partner_id.country_id.code,
             'tourist_birthdate': invoice.partner_id.date_birthdate.strftime('%Y%m%d'),
             'invoice_number': invoice.name,
-            'print_size': format,
+            'print_size': self.format,
             'method': 'pdf_json',
             'check_lines': check_lines
         }
 
-        _logger.info('CHECK {}'.format(data))
-
-
+        #_logger.info('CHECK {}'.format(data))
 
         response = {
             'number': '123456',
@@ -69,19 +75,21 @@ class TravelClient:
         if 'number' in response:
             invoice.taxfree = response['number']
 
+            if self.attach:
+                attachment = {
+                    'name': response['number'] + ".pdf",
+                    'type': 'binary',
+                    'res_id': invoice_id,
+                    'res_model': 'account.move',
+                    'datas': response['check'],
+                    'mimetype': 'application/x-pdf',
+                }
 
-            attachment = {
-                'name': response['number'] + ".pdf",
-                'type': 'binary',
-                'res_id': invoice_id,
-                'res_model': 'account.move',
-                'datas': response['check'],
-                'mimetype': 'application/x-pdf',
-            }
+                self.env['ir.attachment'].create(attachment)
 
-            self.env['ir.attachment'].create(attachment)
+            response['code'] = '0000'
+            return response
 
-            return Utils.generate_code()
         elif 'message' in response:
             return Utils.generate_code(error='9585', msg=response['message'])
         else:

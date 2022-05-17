@@ -11,6 +11,8 @@ class sendTTFWizard(models.TransientModel):
 
     #pos_order_id = fields.Many2one(comodel_name='pos.order',string="Pedido")
 
+    attach = fields.Binary(string="Fichero")
+
 
     def open_wizard(self, order_id=None):
         title_view = 'Enviar taxfree'
@@ -43,10 +45,7 @@ class sendTTFWizard(models.TransientModel):
     def send_taxfree(self, invoice_id):
         response = TravelClient(self.env).generate_taxfree(invoice_id)
 
-        _logger.info('------- {}'.format(response))
-
-        if 'number' in response:
-            return
+        #_logger.info('------- {}'.format(response))
 
         if not 'code' in response:
             raise exceptions.Warning('Error creando tax free. Detalles: {}'.format(response))
@@ -59,6 +58,18 @@ class sendTTFWizard(models.TransientModel):
                 raise exceptions.Warning('Error creando tax free. Detalles: {}'.format(response['msg']))
             else:
                 raise exceptions.Warning('Error {} no especifico. {}'.format(response['code'], response['msg'] if 'msg' in response else ''))
+        else:
+
+            new = self.create({'attach': response['check']})
+
+            return {
+                'name': 'Tax free',
+                'res_model': 'ir.actions.act_url',
+                'type': 'ir.actions.act_url',
+                'target': 'new',
+                'url': '/web/content/{}/{}/attach/{}'.format(self._name, new.id, response['number']+'.pdf')
+            }
+
 
 
 

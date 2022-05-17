@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="True">
+        <record id="taxfree_activity_alimentacion" model="product.activity">
+            <field name="name">Alimentación</field>
+            <field name="alias">ALI</field>
+        </record>
+                <record id="taxfree_activity_alcohol" model="product.activity">
+            <field name="name">Alcohol y tabaco</field>
+            <field name="alias">ALT</field>
+        </record>
+        <record id="taxfree_activity_cultura" model="product.activity">
+            <field name="name">Bienes culturales y artesanía</field>
+            <field name="alias">CUL</field>
+        </record>
+        <record id="taxfree_activity_deporte" model="product.activity">
+            <field name="name">Deportes y ocio</field>
+            <field name="alias">DEP</field>
+        </record>
+        <record id="taxfree_activity_electrodomesticos" model="product.activity">
+            <field name="name">Electrodomésticos</field>
+            <field name="alias">EDM</field>
+        </record>
+        <record id="taxfree_activity_hogar" model="product.activity">
+            <field name="name">Hogar y decoración</field>
+            <field name="alias">HOG</field>
+        </record>
+        <record id="taxfree_activity_informatica" model="product.activity">
+            <field name="name">Informática y electrónica</field>
+            <field name="alias">ELI</field>
+        </record>
+        <record id="taxfree_activity_moda" model="product.activity">
+            <field name="name">Moda y accesorios</field>
+            <field name="alias">MOD</field>
+        </record>
+        <record id="taxfree_activity_joyeria" model="product.activity">
+            <field name="name">Joyería y relojería</field>
+            <field name="alias">JOY</field>
+        </record>
+        <record id="taxfree_activity_perfumeria" model="product.activity">
+            <field name="name">Perfumería, cosmética y farmacia</field>
+            <field name="alias">PER</field>
+        </record>
+        <record id="taxfree_activity_descuentos" model="product.activity">
+            <field name="name">Descuentos</field>
+            <field name="alias">DTO</field>
+        </record>
+        <record id="taxfree_activity_descuentos" model="product.activity">
+            <field name="name">Mascotas</field>
+            <field name="alias">MAS</field>
+        </record>
+    </data>
+</odoo>
