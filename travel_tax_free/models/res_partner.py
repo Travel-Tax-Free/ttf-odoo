@@ -14,6 +14,9 @@ class res_partner(models.Model):
     def _generate_code(self, msg=None):
         return Utils.generate_code(error='9587',msg=msg)
 
+    def test_tourist_id(self, id):
+        return self.search([('id','=',id)])[0].test_tourist()
+
     def test_tourist(self):
         if self.company_type != 'person':
             return self._generate_code(msg='Solo es posible realizar tax free a persona fisica')

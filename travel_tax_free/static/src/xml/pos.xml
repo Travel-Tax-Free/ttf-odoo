@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <t t-name="template_taxfree_pos" t-inherit="point_of_sale.ClientDetailsEdit" t-inherit-mode="extension">
+        <xpath expr="//div[@class='client-details-left']" position="inside">
+            <div class='client-detail'>
+                <span class='label'>Pasaporte</span>
+                <input class='detail client-passport' name='passport' t-att-value='partner.passport || ""'
+                       placeholder="Pasaporte"></input>
+            </div>
+        </xpath>
+        <xpath expr="//div[@class='client-details-right']" position="inside">
+            <div class='client-detail'>
+                <span class='label'>Fecha de nacimiento</span>
+                <input type="date" class='detail client-birthdate' name='date_birthdate'
+                       t-att-value='partner.date_birthdate || ""' placeholder="mm/dd/yyyy"></input>
+            </div>
+        </xpath>
+    </t>
+
+    <t t-name="template_taxfree_payment_screen" t-inherit="point_of_sale.PaymentScreenWidget"
+       t-inherit-mode="extension">
+        <xpath expr="//div[@class='button js_email']" position="before">
+            <t t-if='widget.pos.config.module_account'>
+                <t t-if='widget.pos.get_order()'>
+                    <div class='button js_taxfree'>
+                        <i class='fa fa-suitcase'/>
+                        Factura + Tax Free
+                    </div>
+                </t>
+            </t>
+
+        </xpath>
+    </t>
+
+    <t t-name="template_taxfree_print_taxfree" t-inherit="point_of_sale.ReceiptScreenWidget"
+       t-inherit-mode="extension">
+        <xpath expr="//div[@class='button print']" position="after">
+                    <div class="button print_taxfree">
+                        <i class='fa fa-print'></i> Imprimir tax free
+                    </div>
+        </xpath>
+    </t>
+
+
+</odoo>
