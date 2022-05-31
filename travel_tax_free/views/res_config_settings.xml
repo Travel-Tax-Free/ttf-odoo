@@ -47,7 +47,7 @@
                             <div class="o_setting_right_pane">
                                 <label for="taxfree_attach"/>
                                 <div class="text-muted">
-                                    Adjuntar el tax free al documento.
+                                    Adjuntar el tax free al documento. En caso de solicitud por POS, ignora el valor (siempre True)
                                 </div>
                             </div>
                         </div>

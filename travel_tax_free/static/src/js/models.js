@@ -18,6 +18,8 @@ odoo.define('pos_taxfree.models_extend', function(require){
             var self = this;
             old_prototype.initialize.call(this,attributes,options);
             this.to_taxfree = false;
+            this.taxfree_pdf = false;
+            this.taxfree_number = false;
         },
         set_to_taxfree: function(to_taxfree) {
             this.to_taxfree = to_taxfree;
@@ -25,6 +27,19 @@ odoo.define('pos_taxfree.models_extend', function(require){
         is_to_taxfree: function(){
             return this.to_taxfree;
         },
+        set_taxfree_pdf: function(taxfree_pdf) {
+            this.taxfree_pdf = taxfree_pdf;
+        },
+        get_taxfree_pdf: function() {
+            return this.taxfree_pdf;
+        },
+        set_taxfree_number: function(taxfree_number) {
+            this.taxfree_number = taxfree_number;
+        },
+        get_taxfree_number: function() {
+            return this.taxfree_number;
+        },
+
     });
 
     old_prototype_posmodel = module.PosModel.prototype;
@@ -52,8 +67,26 @@ odoo.define('pos_taxfree.models_extend', function(require){
 
        },
 
+       create_taxfree: function(name) {
+            var peticion = $.Deferred();
+            var res = rpc.query({
+                        model: 'pos.order',
+                        method: 'generate_taxfree_from_order_name',
+                        args: [{}, name],
+            }).then(function (data) {
+                peticion.resolve(data);
+            }).catch(function () {
+                peticion.reject({
+                    code: '9899',
+                    msg: 'Error creando el tax free',
+                });
+            });
+
+            return peticion;
+
+       },
+
         push_and_invoice_order: function (order) {
-            console.log('mirando cositas');
             var self = this;
             if (!order.is_to_taxfree()) {
                 return old_prototype_posmodel.push_and_invoice_order.call(self,order);
@@ -65,24 +98,35 @@ odoo.define('pos_taxfree.models_extend', function(require){
                 return verificaciones.reject({code:400, message:'Missing Customer', data:{}});
             }
 
+            if (order.get_total_tax()==0) {
+                return verificaciones.reject({code:'9898', message:'La factura no tiene IVA', error_taxfree:true});
+            }
+
             $.when(this.test_tourist()).then(function(resultado) {
                 if ("code" in resultado && resultado.code == '0000') {
-                    console.log("vamos bien");
-                    console.log(order);
+                    var order_number = order.name;
                     var promise = old_prototype_posmodel.push_and_invoice_order.call(self,order);
                     promise.then(function() {
-                        console.log('todo bem');
-                        verificaciones.resolve();
+                        self.create_taxfree(order_number).then(function(resultado) {
+                            if ("code" in resultado && resultado.code == '0000') {
+                                order.set_taxfree_pdf(resultado.check);
+                                order.set_taxfree_number(resultado.number);
+                                verificaciones.resolve();
+                            } else {
+                                resultado.error_taxfree = true;
+                                return verificaciones.reject(resultado);
+                            }
+                        }).catch(function(error) {
+                            error.error_taxfree = true;
+                            verificaciones.reject(error);
+                        });
+
                     }).catch(function(error) {
-                        console.log('todo mal');
-                        console.log(error);
                         verificaciones.reject(error);
 
                     });
-                    //return verificaciones.reject({'code': 9999, 'msg': "test"});
                 } else {
                     resultado.error_taxfree = true;
-                    console.log("vamos mal");
                     return verificaciones.reject(resultado);
                 }
 

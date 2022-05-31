@@ -43,21 +43,11 @@ class sendTTFWizard(models.TransientModel):
         return res
 
     def send_taxfree(self, invoice_id):
-        response = TravelClient(self.env).generate_taxfree(invoice_id)
+        invoice = self.env['account.move'].browse(invoice_id)
+        response = invoice.generate_taxfree_from_invoice()
 
-        #_logger.info('------- {}'.format(response))
-
-        if not 'code' in response:
+        if not 'code' in response or response['code']!='0000':
             raise exceptions.Warning('Error creando tax free. Detalles: {}'.format(response))
-        elif response['code'] != '0000':
-            if response['code'] == '9587':
-                raise exceptions.Warning('El turista no pasa las verificaciones. Detalles: {}'.format(response['msg']))
-            elif response['code'] == '9586':
-                raise exceptions.Warning('La factura no pasa las verificaciones. Detalles: {}'.format(response['msg']))
-            elif response['code'] == '9585':
-                raise exceptions.Warning('Error creando tax free. Detalles: {}'.format(response['msg']))
-            else:
-                raise exceptions.Warning('Error {} no especifico. {}'.format(response['code'], response['msg'] if 'msg' in response else ''))
         else:
 
             new = self.create({'attach': response['check']})

@@ -13,14 +13,12 @@ class TravelClient:
         self.password = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_password')
         self.url = 'https://ws-es.traveltaxfree.com' if self.env['ir.config_parameter'].sudo().get_param('base.taxfree_url') == 'produccion' else 'https://demo-es.traveltaxfree.com'
         self.format = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_format') if not format else format
-        self.attach = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_attach')
+        #self.attach = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_attach')
         self.serial = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_serial')
 
-    def generate_taxfree(self, invoice_id):
-        invoice = self.env['account.move'].browse(invoice_id)
-
+    def generate_taxfree(self, invoice):
         if not invoice:
-            return Utils.generate_code(error='9986', msg='Factura {} no encontrada'.format(invoice_id))
+            return Utils.generate_code(error='9986', msg='Factura {} no encontrada'.format(invoice.id))
 
         if not invoice.partner_id:
             return Utils.generate_code(error='9987', msg='Error verificando el turista. Turista inexistente')
@@ -73,21 +71,8 @@ class TravelClient:
         response = TravelRequest(user=self.user, password=self.password, url=self.url).generate_taxfree(data)
 
         if 'number' in response:
-            invoice.taxfree = response['number']
-
-            if self.attach:
-                attachment = {
-                    'name': response['number'] + ".pdf",
-                    'type': 'binary',
-                    'res_id': invoice_id,
-                    'res_model': 'account.move',
-                    'datas': response['check'],
-                    'mimetype': 'application/x-pdf',
-                }
-
-                self.env['ir.attachment'].create(attachment)
-
             response['code'] = '0000'
+
             return response
 
         elif 'message' in response:

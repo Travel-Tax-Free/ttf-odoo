@@ -37,69 +37,6 @@ odoo.define('pos_taxfree.screens_extend', function(require){
                 this.button_taxfree(false);
             }
        },
-/*
-       test_tourist: function() {
-            var order = this.pos.get_order();
-            var client = order.get_client();
-            var res = rpc.query({
-                        model: 'res.partner',
-                        method: 'test_tourist_id',
-                        args: [{}, client.id],
-                    }, {
-                timeout: 3000,
-                shadow: true,
-            }).then(function (data) {
-                        console.log('----');
-                        console.log(data);
-                        invoiced.resolve();
-                    });
-
-            return res;
-
-       },
-
-
-       order_is_valid: function() {
-            result = this._super();
-            if (!result) {
-                return false;
-            }
-
-            var self = this;
-            var order = this.pos.get_order();
-            var client = order.get_client();
-
-            if (!order.is_to_taxfree()) {
-                return true;
-            } else {
-
-                if (!client || !client.passport || client.passport.lenght<3 || !client.date_birthdate || !client.country_id) {
-                    this.gui.show_popup('confirm', {
-                        'title': !client ? _t('Please select the customer') : _t('Please select a valid customer'),
-                        'body': !client ? _t('You need to select the customer before you make a tax free') :  _t('This customer does not have a valid passport, country or birthdate'),
-                        confirm: function () {
-                            this.gui.show_screen('clientlist');
-                        },
-                    });
-                    return false;
-                } else {
-
-                        this.test_tourist().then(num => {
-                            console.log('*****');
-                            console.log(num);
-                        });
-                        console.log('######');
-                        //console.log(test);
-
-
-                        return false;
-
-
-
-                }
-            }
-       },
-*/
     });
 
     screens.ReceiptScreenWidget.include({
@@ -138,7 +75,25 @@ odoo.define('pos_taxfree.screens_extend', function(require){
         },
 
         click_print_taxfree: function() {
-                console.log(this.get_order_name());
+            if (!this.pos.get_order().get_taxfree_pdf()) {
+                    this.gui.show_popup('error',{
+                        'title': _t('Error creating tax free'),
+                        'body': _t('La factura se ha creado correctamente, pero ha habido un error inesperado creando tax free. Por favor, comuniquese con su central para la creación manual del tax free'),
+                    });
+            }
+            const byteCharacters = atob(this.pos.get_order().get_taxfree_pdf());
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+
+            var blob = new Blob([byteArray], {type: 'application/pdf'});
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.target = "_blank"
+            link.download = this.pos.get_order().get_taxfree_number()+".pdf";
+            link.click();
         },
 
     });
@@ -151,13 +106,29 @@ odoo.define('pos_taxfree.screens_extend', function(require){
             order.finalized = false;
 
             if (error && "error_taxfree" in error) {
-                this.gui.show_popup('confirm',{
-                    'title': _t('Please select a valid customer'),
-                    'body': _t('This customer does not have a valid passport, country or birthdate'),
-                    confirm: function(){
-                        self.gui.show_screen('clientlist', null, refresh_screen);
-                    },
-                });
+                if ("code" in error && error.code=="9899") {
+                    order.set_to_taxfree(false);
+                    this.gui.show_popup('error',{
+                        'title': _t('Error creating tax free'),
+                        'body': _t('La factura se ha creado correctamente, pero ha habido un error inesperado creando tax free. Por favor, comuniquese con su central para la creación manual del tax free'),
+                        cancel: function () {
+                            this.gui.show_screen('receipt', refresh_screen); // refresh if necessary
+                        }
+                    });
+                } else if ("code" in error && error.code=="9898") {
+                    this.gui.show_popup('error',{
+                        'title': _t('Error creating tax free'),
+                        'body': _t('Para crear el tax free, la factura debe de tener IVA'),
+                    });
+                } else {
+                    this.gui.show_popup('confirm',{
+                        'title': _t('Please select a valid customer'),
+                        'body': _t('This customer does not have a valid passport, country or birthdate'),
+                        confirm: function(){
+                            self.gui.show_screen('clientlist', null, refresh_screen);
+                        },
+                    });
+                }
             } else {
                 return this._super(order, refresh_screen, error);
             }
