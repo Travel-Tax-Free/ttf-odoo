@@ -8,8 +8,16 @@ odoo.define('pos_taxfree.models_extend', function(require){
     for(var i=0; i<models.length; i++){
         if(models[i].model === 'res.partner'){
              models[i].fields.push('passport','date_birthdate','id');
-             break;
         }
+/*
+        } else if (models[i].model == 'pos.config') {
+            padre = models[i].loaded
+            models[i].loaded = function(self,configs) {
+                padre(self,configs)
+                console.log(configs)
+            }
+        }
+*/
     }
 
     old_prototype = module.Order.prototype
@@ -88,6 +96,7 @@ odoo.define('pos_taxfree.models_extend', function(require){
 
         push_and_invoice_order: function (order) {
             var self = this;
+
             if (!order.is_to_taxfree()) {
                 return old_prototype_posmodel.push_and_invoice_order.call(self,order);
             }
@@ -101,6 +110,7 @@ odoo.define('pos_taxfree.models_extend', function(require){
             if (order.get_total_tax()==0) {
                 return verificaciones.reject({code:'9898', message:'La factura no tiene IVA', error_taxfree:true});
             }
+
 
             $.when(this.test_tourist()).then(function(resultado) {
                 if ("code" in resultado && resultado.code == '0000') {

@@ -15,6 +15,9 @@ Dentro de ajustes -> Travel Tax Free, tendremos las siguientes opciones:
 * Adjuntar documento. Asocia un PDF con el documento tax free al modelo correspondiente
 * Enviar número de serie. Si los objetos tienen número de serie, la AEAT exige su envío. Active esta opción para que coja el campo código de barras como número de serie en el caso de que exista
 * Formato. Dependiendo de la selección, el documento tax free será un A4 o un ticket
+* Categoría. En el caso de que se requiera, se puede poner que se asigne una categoría a todo cliente que se cree/edit desde la extranet
+* Email requerido. Si es true, verificará que lleva email a la hora de guardarlo. Independientemente de su valor, si lleva email verificará que esté en el formato correcto.
+* Cambio de selector. ¡Experimental! Cambia el selector de paises (requiere reiniciar POS)
 
 Funcionamiento
 --------------

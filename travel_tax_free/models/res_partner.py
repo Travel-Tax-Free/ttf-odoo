@@ -1,8 +1,11 @@
+import logging
 from datetime import datetime
 
 from odoo import models, api, fields, exceptions, http, _, tools
 from dateutil.relativedelta import relativedelta
 from odoo.addons.travel_tax_free.controllers.util import Utils
+
+_logger = logging.getLogger(__name__)
 
 class res_partner(models.Model):
     _name = 'res.partner'
@@ -34,5 +37,15 @@ class res_partner(models.Model):
             return self._generate_code(msg='El turista tiene menos de 16 años')
         else:
             return self._generate_code()
+
+
+    @api.model
+    def create_from_ui(self, partner):
+        category_id = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_category_id')
+
+        if category_id:
+            partner['category_id'] = [(4,int(category_id))]
+
+        return super(res_partner, self).create_from_ui(partner)
 
 

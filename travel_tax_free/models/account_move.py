@@ -54,7 +54,7 @@ class account_move(models.Model):
                 'taxfree': response['number']
             }
 
-            attach = self.attach = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_attach')
+            attach = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_attach')
             if attach:
                 attachment = {
                     'name': response['number'] + ".pdf",

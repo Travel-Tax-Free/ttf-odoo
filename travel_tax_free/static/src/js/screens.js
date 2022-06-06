@@ -13,7 +13,6 @@ odoo.define('pos_taxfree.screens_extend', function(require){
             this.$('.js_taxfree').click(function(){
                 self.click_taxfree();
             });
-
         },
 
         click_taxfree: function(){
@@ -134,6 +133,49 @@ odoo.define('pos_taxfree.screens_extend', function(require){
             }
         }
 
+    });
+
+    screens.ClientListScreenWidget.include({
+        validateEmail: (email) => {
+            return String(email)
+                .toLowerCase()
+                .match(
+                    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                );
+        },
+
+        save_client_details: function(partner) {
+            var self = this;
+
+            var fields = {};
+            var wipe = []
+            this.$('.client-details-contents .detail').each(function(idx,el){
+                if (self.integer_client_details.includes(el.name)){
+                    var parsed_value = parseInt(el.value, 10);
+                    if (isNaN(parsed_value)){
+                        fields[el.name] = false;
+                    }
+                    else{
+                        fields[el.name] = parsed_value
+                    }
+                }
+                else{
+                    fields[el.name] = el.value || false;
+                }
+            });
+
+            if (self.pos.config.partner_email_required && !fields.email) {
+                this.gui.show_popup('error',_t('A email is required'));
+                return;
+            }
+
+            if (fields.email && !self.validateEmail(fields.email)) {
+                this.gui.show_popup('error',_t('Please enter a valid email'));
+                return;
+            }
+
+            return this._super(partner);
+        }
     });
 
 });

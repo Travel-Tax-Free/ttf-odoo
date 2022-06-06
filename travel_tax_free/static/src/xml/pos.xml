@@ -15,6 +15,26 @@
                        t-att-value='partner.date_birthdate || ""' placeholder="mm/dd/yyyy"></input>
             </div>
         </xpath>
+        <xpath expr="//select[@class='detail client-address-country needsclick']" position="replace">
+                        <div style="padding: 0px 0px 4px 0px; width: 340px; display: inline-block;">
+                        <select class='detail client-address-country needsclick' name='country_id'>
+                            <option value=''>None</option>
+                            <t t-foreach='widget.pos.countries' t-as='country'>
+                                <option t-att-value='country.id' t-att-selected="partner.country_id ? ((country.id === partner.country_id[0]) ? true : undefined) : undefined">
+                                    <t t-esc='country.name'/>
+                                </option>
+                            </t>
+                        </select></div>
+            <t t-if='widget.pos.config.experimental_country'>
+            <script>
+                $(function() {
+                    var $select = $('select[name="country_id"]').selectize();
+                    $('div.selectize-control').removeClass('client-details-contents detail');
+                    $('div.selectize-dropdown').removeClass('client-details-contents detail');
+                });
+            </script>
+            </t>
+        </xpath>
     </t>
 
     <t t-name="template_taxfree_payment_screen" t-inherit="point_of_sale.PaymentScreenWidget"
@@ -35,9 +55,10 @@
     <t t-name="template_taxfree_print_taxfree" t-inherit="point_of_sale.ReceiptScreenWidget"
        t-inherit-mode="extension">
         <xpath expr="//div[@class='button print']" position="after">
-                    <div class="button print_taxfree">
-                        <i class='fa fa-print'></i> Imprimir tax free
-                    </div>
+            <div class="button print_taxfree">
+                <i class='fa fa-print'></i>
+                Imprimir tax free
+            </div>
         </xpath>
     </t>
 

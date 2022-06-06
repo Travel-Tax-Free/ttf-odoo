@@ -47,7 +47,7 @@
                             <div class="o_setting_right_pane">
                                 <label for="taxfree_attach"/>
                                 <div class="text-muted">
-                                    Adjuntar el tax free al documento. En caso de solicitud por POS, ignora el valor (siempre True)
+                                    Adjuntar el tax free al documento (se aconseja valor a True)
                                 </div>
                             </div>
                         </div>
@@ -73,6 +73,42 @@
                                     <div class="content-group mt16">
                                         <field name="taxfree_format" required="True" />
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <div>
+                                    <label string="Categoría" for="taxfree_category_id"/>
+                                    <div class="text-muted">
+                                        Categoría cliente creado en TPV
+                                    </div>
+
+                                    <div class="content-group mt16">
+                                        <field name="taxfree_category_id"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="taxfree_email_required"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="taxfree_email_required"/>
+                                <div class="text-muted">
+                                    Email obligatorio en el cliente POS (requiere reiniciar POS)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="taxfree_selectize_country"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="taxfree_selectize_country"/>
+                                <div class="text-muted">
+                                    ¡Experimental! Cambia el selector de paises (requiere reiniciar POS)
                                 </div>
                             </div>
                         </div>
