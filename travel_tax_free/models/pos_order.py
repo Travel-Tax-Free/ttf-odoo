@@ -20,7 +20,7 @@ class pos_order(models.Model):
             if 'code' in response and response['code'] == '0000':
                 self.write({
                     'x_tax_free': True,
-                    'notes': response['number'],
+                    'note': response['number'],
                 })
 
             return response

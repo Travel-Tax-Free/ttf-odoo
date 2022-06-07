@@ -2,6 +2,7 @@ odoo.define('pos_taxfree.screens_extend', function(require){
 
     var core = require('web.core');
     var rpc = require('web.rpc')
+    var qweb = core.qweb;
     var _t = core._t;
 
     var screens = require('point_of_sale.screens');
@@ -94,6 +95,33 @@ odoo.define('pos_taxfree.screens_extend', function(require){
             link.download = this.pos.get_order().get_taxfree_number()+".pdf";
             link.click();
         },
+
+        render_receipt: function () {
+            //this._super();
+            var self = this;
+            var order = this.pos.get_order();
+            if (!this.pos.config.iface_print_via_proxy && order.is_to_invoice()) {
+                var invoiced = new $.Deferred();
+                rpc.query({
+                    model: 'pos.order',
+                    method: 'search_read',
+                    domain: [['pos_reference', '=', order['name']]],
+                    fields: ['account_move']
+                }).then(function (orders) {
+                    if (orders.length > 0 && orders[0]['account_move'] && orders[0]['account_move'][1]) {
+                        var invoice_number = orders[0]['account_move'][1].split(" ")[0];
+                        self.pos.get_order()['invoice_number'] = invoice_number;
+                        self.$('.pos-receipt-container').html(qweb.render('OrderReceipt', self.get_receipt_render_env()));
+                    }
+                    invoiced.resolve();
+                }).catch(function (type, error) {
+                    invoiced.reject(error);
+                });
+                return invoiced;
+            } else {
+                return self._super();
+            }
+        }
 
     });
 

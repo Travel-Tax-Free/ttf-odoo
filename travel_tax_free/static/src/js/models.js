@@ -28,6 +28,7 @@ odoo.define('pos_taxfree.models_extend', function(require){
             this.to_taxfree = false;
             this.taxfree_pdf = false;
             this.taxfree_number = false;
+            this.invoice_number = false;
         },
         set_to_taxfree: function(to_taxfree) {
             this.to_taxfree = to_taxfree;
@@ -46,6 +47,19 @@ odoo.define('pos_taxfree.models_extend', function(require){
         },
         get_taxfree_number: function() {
             return this.taxfree_number;
+        },
+
+        export_for_printing: function() {
+            var self = this;
+            receipt = old_prototype.export_for_printing.call(this);
+
+            if (self.is_to_invoice()) {
+                receipt.invoice_id = {name: self.invoice_number};
+            }
+
+            return receipt;
+
+
         },
 
     });
