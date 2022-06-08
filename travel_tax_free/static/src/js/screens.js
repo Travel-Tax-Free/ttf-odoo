@@ -99,7 +99,9 @@ odoo.define('pos_taxfree.screens_extend', function(require){
         render_receipt: function () {
             //this._super();
             var self = this;
+            var _super = this._super.bind(this);
             var order = this.pos.get_order();
+
             if (!this.pos.config.iface_print_via_proxy && order.is_to_invoice()) {
                 var invoiced = new $.Deferred();
                 rpc.query({
@@ -111,7 +113,8 @@ odoo.define('pos_taxfree.screens_extend', function(require){
                     if (orders.length > 0 && orders[0]['account_move'] && orders[0]['account_move'][1]) {
                         var invoice_number = orders[0]['account_move'][1].split(" ")[0];
                         self.pos.get_order()['invoice_number'] = invoice_number;
-                        self.$('.pos-receipt-container').html(qweb.render('OrderReceipt', self.get_receipt_render_env()));
+                        //self.$('.pos-receipt-container').html(qweb.render('OrderReceipt', self.get_receipt_render_env()));
+                        _super();
                     }
                     invoiced.resolve();
                 }).catch(function (type, error) {
