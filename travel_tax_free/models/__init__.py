@@ -4,5 +4,6 @@ from . import account_move
 from . import res_config_settings
 from . import pos_config
 from . import pos_order
+from . import travel_users
 #from . import product_activity
 #from . import product_template

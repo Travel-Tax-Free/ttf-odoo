@@ -9,6 +9,7 @@ class pos_config(models.Model):
 
     partner_email_required = fields.Boolean(string="Email obligatorio", compute='_compute_email_required')
     experimental_country = fields.Boolean(string="Selectize paises", compute='_compute_experimental')
+    travel_user_id = fields.Many2one('travel.users', string="Usuario tax free")
 
     def _compute_email_required(self):
         for rec in self:

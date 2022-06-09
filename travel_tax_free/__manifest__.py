@@ -3,7 +3,7 @@
 
 {
     'name': 'Travel Tax Free Integration',
-    'version': '1.4',
+    'version': '1.5',
     'author': 'Travel Tax Free',
     'description': """
 Travel Tax Free Integration
@@ -16,7 +16,7 @@ Travel Tax Free Integration
     ],
     'data': [
     #    'security/groups.xml',
-    #    'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
 
         'static/src/xml/pos_templates.xml',
 
@@ -25,7 +25,8 @@ Travel Tax Free Integration
         'views/res_country_view.xml',
         'views/account_move_view.xml',
         'views/res_config_settings.xml',
-     #   'views/pos_config_view.xml',
+        'views/travel_users_view.xml',
+        'views/pos_config_view.xml',
      #   'views/product_template_view.xml',
         'wizard/send_ttf_wizard_view.xml',
     ],

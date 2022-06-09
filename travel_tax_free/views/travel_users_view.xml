@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ttf_users_form_view" model="ir.ui.view">
+        <field name="name">ttf_users_form</field>
+        <field name="model">travel.users</field>
+        <field name="arch" type="xml">
+            <form string="Usuarios Travel">
+                <group col="4" colspan="4">
+                    <field name="name"/>
+                    <field name="default"/>
+                    <field name="user" />
+                    <field name="key" />
+                    <field name="pos_ids" widget="many2many_tags" options="{'no_create': True, 'no_create_edit': True, 'no_open': False}" domain="[('travel_user_id','=',None)]" />
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="ttf_users_tree_view" model="ir.ui.view">
+        <field name="name">ttf_users_form</field>
+        <field name="model">travel.users</field>
+        <field name="arch" type="xml">
+            <tree string="Travel users">
+                    <field name="name"/>
+                    <field name="default"/>
+                    <field name="user" />
+                    <field name="pos_ids" widget="many2many_tags"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

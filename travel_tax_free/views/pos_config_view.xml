@@ -8,13 +8,10 @@
             <field name="arch" type="xml">
                 <div id="iface_invoicing" position="after">
                         <div class="col-12 col-lg-6 o_setting_box pos_taxfree">
-                            <div class="o_setting_left_pane">
-                                <field name='taxfree'/>
-                            </div>
                             <div class="o_setting_right_pane">
-                                <label for="taxfree"/>
+                                <label for="travel_user_id"/>
                                 <div class="text-muted">
-                                    Permite realizar tax free. Requiere la opción de contabilidad activa
+                                    <field name='travel_user_id'/>
                                 </div>
                             </div>
                         </div>

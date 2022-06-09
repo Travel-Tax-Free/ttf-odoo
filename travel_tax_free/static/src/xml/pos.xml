@@ -40,12 +40,14 @@
     <t t-name="template_taxfree_payment_screen" t-inherit="point_of_sale.PaymentScreenWidget"
        t-inherit-mode="extension">
         <xpath expr="//div[@class='button js_email']" position="before">
-            <t t-if='widget.pos.config.module_account'>
-                <t t-if='widget.pos.get_order()'>
-                    <div class='button js_taxfree'>
-                        <i class='fa fa-suitcase'/>
-                        Factura + Tax Free
-                    </div>
+            <t t-if='widget.pos.config.travel_user_id'>
+                <t t-if='widget.pos.config.module_account'>
+                    <t t-if='widget.pos.get_order()'>
+                        <div class='button js_taxfree'>
+                            <i class='fa fa-suitcase'/>
+                            Factura + Tax Free
+                        </div>
+                    </t>
                 </t>
             </t>
 

@@ -10,8 +10,7 @@ Configuración
 -------------
 Dentro de ajustes -> Travel Tax Free, tendremos las siguientes opciones:
 * URL de conexión. Seleccione Demo para el entorno de pruebas y Producción para real.
-* Usuario. Usuario facilitado por Travel Tax Free
-* Password. Password facilitado por Travel Tax Free
+* Usuarios. Se definirán los usuarios/password correspondientes.
 * Adjuntar documento. Asocia un PDF con el documento tax free al modelo correspondiente
 * Enviar número de serie. Si los objetos tienen número de serie, la AEAT exige su envío. Active esta opción para que coja el campo código de barras como número de serie en el caso de que exista
 * Formato. Dependiendo de la selección, el documento tax free será un A4 o un ticket

@@ -1,5 +1,6 @@
 import logging
 
+from odoo import exceptions
 from .travel_request import TravelRequest
 from .util import Utils
 
@@ -9,8 +10,6 @@ class TravelClient:
     def __init__(self, env, format=None):
         self.env = env
 
-        self.user = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_user')
-        self.password = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_password')
         self.url = 'https://ws-es.traveltaxfree.com' if self.env['ir.config_parameter'].sudo().get_param('base.taxfree_url') == 'produccion' else 'https://demo-es.traveltaxfree.com'
         self.format = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_format') if not format else format
         #self.attach = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_attach')
@@ -68,7 +67,19 @@ class TravelClient:
             'check': 'aG9sYSBtdW5kbw=='
         }
 
-        response = TravelRequest(user=self.user, password=self.password, url=self.url).generate_taxfree(data)
+        # Busqueda del usuario
+        if invoice.pos_order_ids and invoice.pos_order_ids[0].config_id.travel_user_id:
+            user = invoice.pos_order_ids[0].config_id.travel_user_id.user
+            password = invoice.pos_order_ids[0].config_id.travel_user_id.key
+        else:
+            default = self.env['travel.users'].search([('default','=',True)])
+            if default:
+                user = default[0].user
+                password = default[0].key
+            else:
+                raise exceptions.Warning('No se ha encontrado usuario por defecto')
+
+        response = TravelRequest(user=user, password=password, url=self.url).generate_taxfree(data)
 
         if 'number' in response:
             response['code'] = '0000'

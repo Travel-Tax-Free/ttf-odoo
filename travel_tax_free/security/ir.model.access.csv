@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_product_activity,access_product_activity,model_product_activity,,1,1,1,1
+access_travel_users,access_travel_users,model_travel_users,,1,1,1,1
