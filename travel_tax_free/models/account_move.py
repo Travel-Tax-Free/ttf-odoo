@@ -70,3 +70,15 @@ class account_move(models.Model):
             self.write(data)
 
             return response
+
+    def remove_taxfree(self):
+        if not self.taxfree:
+            raise exceptions.Warning('La factura {} no tiene un taxfree asociado'.format(self.name))
+
+        if self.taxfree_id:
+            self.taxfree_id.unlink()
+
+        self.write({
+            'taxfree': None,
+            'taxfree_id': None,
+        })
