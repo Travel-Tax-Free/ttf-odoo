@@ -37,6 +37,33 @@ odoo.define('pos_taxfree.screens_extend', function(require){
                 this.button_taxfree(false);
             }
        },
+
+        post_push_order_resolve: function(order, server_ids){
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                var promise = self._super(order, server_ids);
+
+                promise.then(function() {
+                    if (!order.is_to_invoice()) {
+                        resolve();
+                    } else {
+                        self.pos.get_invoice_number(order).then(function() {
+                            resolve();
+                        }).catch(function(error) {
+                            reject(error)
+                        });
+                    }
+
+                }).catch(function(error) {
+                    reject(error);
+                });
+            })
+
+
+
+
+        },
     });
 
     screens.ReceiptScreenWidget.include({
@@ -75,27 +102,35 @@ odoo.define('pos_taxfree.screens_extend', function(require){
         },
 
         click_print_taxfree: function() {
-            if (!this.pos.get_order().get_taxfree_pdf()) {
+            var order = this.pos.get_order();
+            if (order.error_taxfree) {
+                 this.gui.show_popup('error',{
+                    'title': _t('Error creating tax free'),
+                    'body': order.error_taxfree,
+                 });
+            } else if (!order.get_taxfree_pdf()) {
                     this.gui.show_popup('error',{
                         'title': _t('Error creating tax free'),
                         'body': _t('La factura se ha creado correctamente, pero ha habido un error inesperado creando tax free. Por favor, comuniquese con su central para la creación manual del tax free'),
                     });
-            }
-            const byteCharacters = atob(this.pos.get_order().get_taxfree_pdf());
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
+            } else {
+                const byteCharacters = atob(this.pos.get_order().get_taxfree_pdf());
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
 
-            var blob = new Blob([byteArray], {type: 'application/pdf'});
-            var link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.target = "_blank"
-            link.download = this.pos.get_order().get_taxfree_number()+".pdf";
-            link.click();
+                var blob = new Blob([byteArray], {type: 'application/pdf'});
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.target = "_blank"
+                link.download = this.pos.get_order().get_taxfree_number()+".pdf";
+                link.click();
+            }
         },
 
+/*
         render_receipt: function () {
             //this._super();
             var self = this;
@@ -125,8 +160,9 @@ odoo.define('pos_taxfree.screens_extend', function(require){
                 return self._super();
             }
         }
-
+        */
     });
+
 
     screens.ScreenWidget.include({
         _handleFailedPushForInvoice: function (order, refresh_screen, error) {
@@ -135,22 +171,7 @@ odoo.define('pos_taxfree.screens_extend', function(require){
             this.invoicing = false;
             order.finalized = false;
 
-            if (error && "error_taxfree" in error) {
-                if ("code" in error && error.code=="9899") {
-                    order.set_to_taxfree(false);
-                    this.gui.show_popup('error',{
-                        'title': _t('Error creating tax free'),
-                        'body': _t('La factura se ha creado correctamente, pero ha habido un error inesperado creando tax free. Por favor, comuniquese con su central para la creación manual del tax free'),
-                        cancel: function () {
-                            this.gui.show_screen('receipt', refresh_screen); // refresh if necessary
-                        }
-                    });
-                } else if ("code" in error && error.code=="9898") {
-                    this.gui.show_popup('error',{
-                        'title': _t('Error creating tax free'),
-                        'body': _t('Para crear el tax free, la factura debe de tener IVA'),
-                    });
-                } else {
+            if ("code" in error && error['code'] == '9587') {
                     this.gui.show_popup('confirm',{
                         'title': _t('Please select a valid customer'),
                         'body': _t('This customer does not have a valid passport, country or birthdate'),
@@ -158,13 +179,13 @@ odoo.define('pos_taxfree.screens_extend', function(require){
                             self.gui.show_screen('clientlist', null, refresh_screen);
                         },
                     });
-                }
             } else {
                 return this._super(order, refresh_screen, error);
             }
         }
 
     });
+
 
     screens.ClientListScreenWidget.include({
         validateEmail: (email) => {

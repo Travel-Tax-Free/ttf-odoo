@@ -35,21 +35,10 @@ class account_move(models.Model):
         return self._generate_code()
 
 
-    def generate_taxfree_from_invoice(self):
+    def generate_taxfree_from_invoice(self, pos=False):
         response = TravelClient(self.env).generate_taxfree(self)
 
-        if not 'code' in response:
-            raise exceptions.Warning('Error creando tax free. Detalles: {}'.format(response))
-        elif response['code'] != '0000':
-            if response['code'] == '9587':
-                raise exceptions.Warning('El turista no pasa las verificaciones. Detalles: {}'.format(response['msg']))
-            elif response['code'] == '9586':
-                raise exceptions.Warning('La factura no pasa las verificaciones. Detalles: {}'.format(response['msg']))
-            elif response['code'] == '9585':
-                raise exceptions.Warning('Error creando tax free. Detalles: {}'.format(response['msg']))
-            else:
-                raise exceptions.Warning('Error {} no especifico. {}'.format(response['code'], response['msg'] if 'msg' in response else ''))
-        else:
+        if 'code' in response and response['code'] == '0000':
             data = {
                 'taxfree': response['number']
             }
@@ -70,6 +59,20 @@ class account_move(models.Model):
             self.write(data)
 
             return response
+        elif pos:
+            return response
+        else:
+            if not 'code' in response:
+                raise exceptions.Warning('Error creando tax free. Detalles: {}'.format(response))
+            elif response['code'] != '0000':
+                if response['code'] == '9587':
+                    raise exceptions.Warning('El turista no pasa las verificaciones. Detalles: {}'.format(response['msg']))
+                elif response['code'] == '9586':
+                    raise exceptions.Warning('La factura no pasa las verificaciones. Detalles: {}'.format(response['msg']))
+                elif response['code'] == '9585':
+                    raise exceptions.Warning('Error creando tax free. Detalles: {}'.format(response['msg']))
+                else:
+                    raise exceptions.Warning('Error {} no especifico. {}'.format(response['code'], response['msg'] if 'msg' in response else ''))
 
     def remove_taxfree(self):
         if not self.taxfree:

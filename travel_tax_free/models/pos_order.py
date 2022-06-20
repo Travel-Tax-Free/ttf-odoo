@@ -12,11 +12,11 @@ class pos_order(models.Model):
 
     x_tax_free = fields.Boolean(string="Tax free")
 
-    def generate_taxfree_from_order(self):
+    def generate_taxfree_from_order(self, pos=True):
         if not self.account_move:
             raise Warning("El pedido {} no tiene factura asociada".format(self.pos_reference))
         else:
-            response = self.account_move.generate_taxfree_from_invoice()
+            response = self.account_move.generate_taxfree_from_invoice(pos=pos)
             if 'code' in response and response['code'] == '0000':
                 self.write({
                     'x_tax_free': True,

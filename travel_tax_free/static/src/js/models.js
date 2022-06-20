@@ -29,6 +29,7 @@ odoo.define('pos_taxfree.models_extend', function(require){
             this.taxfree_pdf = false;
             this.taxfree_number = false;
             this.invoice_number = false;
+            this.error_taxfree = false;
         },
         set_to_taxfree: function(to_taxfree) {
             this.to_taxfree = to_taxfree;
@@ -68,24 +69,27 @@ odoo.define('pos_taxfree.models_extend', function(require){
     module.PosModel = module.PosModel.extend({
        test_tourist: function() {
             var client = this.get_client();
-            var peticion = $.Deferred();
-            var res = rpc.query({
+            return new Promise(function (resolve, reject) {
+                rpc.query({
                         model: 'res.partner',
                         method: 'test_tourist_id',
                         args: [{}, client.id],
                     }, {
-                timeout: 3000,
-                shadow: true,
-            }).then(function (data) {
-                peticion.resolve(data);
-            }).catch(function () {
-                peticion.reject({
-                    code: '9999',
-                    msg: 'Error verificando turista',
-                });
+                    timeout: 3000,
+                    shadow: true,
+                }).then(function (data) {
+                    if ("code" in data && data["code"] == '0000') {
+                        resolve(data);
+                    } else{
+                        reject(data);
+                    }
+                }).catch(function () {
+                    reject({
+                        code: '9999',
+                        message: 'error_tourist',
+                    });
+                })
             });
-
-            return peticion;
 
        },
 
@@ -95,6 +99,8 @@ odoo.define('pos_taxfree.models_extend', function(require){
                         model: 'pos.order',
                         method: 'generate_taxfree_from_order_name',
                         args: [{}, name],
+            }, {
+                shadow: false,
             }).then(function (data) {
                 peticion.resolve(data);
             }).catch(function () {
@@ -106,6 +112,26 @@ odoo.define('pos_taxfree.models_extend', function(require){
 
             return peticion;
 
+       },
+
+       get_invoice_number: function(order) {
+            var peticion = $.Deferred();
+            var res = rpc.query({
+                    model: 'pos.order',
+                    method: 'search_read',
+                    domain: [['pos_reference', '=', order['name']]],
+                    fields: ['account_move']
+            }).then(function (orders) {
+                if (orders.length > 0 && orders[0]['account_move'] && orders[0]['account_move'][1]) {
+                    var invoice_number = orders[0]['account_move'][1].split(" ")[0];
+                    order['invoice_number'] = invoice_number;
+                }
+                peticion.resolve();
+            }).catch(function (type, error) {
+                peticion.reject(error);
+            });
+
+            return peticion;
        },
 
         push_and_invoice_order: function (order) {
@@ -137,26 +163,30 @@ odoo.define('pos_taxfree.models_extend', function(require){
                                 order.set_taxfree_number(resultado.number);
                                 verificaciones.resolve();
                             } else {
-                                resultado.error_taxfree = true;
-                                return verificaciones.reject(resultado);
+                                order.error_taxfree = 'Ha habido un error inesperado creando tax free. Por favor, comuniquese con su central para la creación manual.';
+                                if ("code" in resultado) {
+                                    order.error_taxfree += ' Detalles: '+resultado['code'];
+                                    if ("msg" in resultado) {
+                                        order.error_taxfree += '. '+resultado['msg'];
+                                    }
+                                }
+                                verificaciones.resolve();
                             }
                         }).catch(function(error) {
-                            error.error_taxfree = true;
+                            error.error_taxfree = 'Error desconocido';
                             verificaciones.reject(error);
                         });
 
                     }).catch(function(error) {
+                        error.error_taxfree = 'Error desconocido';
                         verificaciones.reject(error);
-
                     });
                 } else {
-                    resultado.error_taxfree = true;
-                    return verificaciones.reject(resultado);
+                    verificaciones.reject(resultado);
                 }
 
             }).catch(function(resultado) {
-                    resultado.error_taxfree = true;
-                    return verificaciones.reject(resultado);
+                    verificaciones.reject(resultado);
             });
 
             return verificaciones.promise();
