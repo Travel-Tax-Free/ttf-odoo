@@ -9,15 +9,7 @@ odoo.define('pos_taxfree.models_extend', function(require){
         if(models[i].model === 'res.partner'){
              models[i].fields.push('passport','date_birthdate','id');
         }
-/*
-        } else if (models[i].model == 'pos.config') {
-            padre = models[i].loaded
-            models[i].loaded = function(self,configs) {
-                padre(self,configs)
-                console.log(configs)
-            }
-        }
-*/
+
     }
 
     old_prototype = module.Order.prototype
@@ -67,6 +59,7 @@ odoo.define('pos_taxfree.models_extend', function(require){
 
     old_prototype_posmodel = module.PosModel.prototype;
     module.PosModel = module.PosModel.extend({
+
        test_tourist: function() {
             var client = this.get_client();
             return new Promise(function (resolve, reject) {

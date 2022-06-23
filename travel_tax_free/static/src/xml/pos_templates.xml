@@ -4,6 +4,7 @@
             <script type="text/javascript" src="/travel_tax_free/static/src/js/models.js"/>
             <script type="text/javascript" src="/travel_tax_free/static/src/js/screens.js"/>
             <script type="text/javascript" src="/travel_tax_free/static/src/js/selectize.js"/>
+            <script type="text/javascript" src="/travel_tax_free/static/src/js/iso3166.js"/>
             <link rel="stylesheet" type="text/css" href="/travel_tax_free/static/src/css/selectize.css"/>
         </xpath>
     </template>
