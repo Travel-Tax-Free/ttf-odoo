@@ -35,6 +35,8 @@ class res_partner(models.Model):
             return self._generate_code(msg='Falta fecha de nacimiento')
         elif relativedelta(datetime.now().date(), self.date_birthdate).years<16:
             return self._generate_code(msg='El turista tiene menos de 16 años')
+        elif self.country_id.code == 'GB' and (not self.zip or len(self.zip) == 0):
+            return self._generate_code(msg='Los turistas del Reino Unido deben de rellenar el código postal')
         else:
             return self._generate_code()
 

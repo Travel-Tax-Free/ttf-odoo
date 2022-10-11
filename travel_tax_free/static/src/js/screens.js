@@ -172,9 +172,14 @@ odoo.define('pos_taxfree.screens_extend', function(require){
             order.finalized = false;
 
             if ("code" in error && error['code'] == '9587') {
+                    if ("msg" in error) {
+                        msg = error['msg'];
+                    } else {
+                        msg = _t('This customer does not have a valid passport, country or birthdate')
+                    }
                     this.gui.show_popup('confirm',{
                         'title': _t('Please select a valid customer'),
-                        'body': _t('This customer does not have a valid passport, country or birthdate'),
+                        'body': msg,
                         confirm: function(){
                             self.gui.show_screen('clientlist', null, refresh_screen);
                         },

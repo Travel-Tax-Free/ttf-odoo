@@ -60,6 +60,9 @@ class TravelClient:
             'check_lines': check_lines
         }
 
+        if invoice.partner_id.zip:
+            data['tourist_zip'] = invoice.partner_id.zip
+
         #_logger.info('CHECK {}'.format(data))
 
         response = {
