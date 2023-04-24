@@ -46,7 +46,7 @@ class res_country(models.Model):
 
     @api.model
     def _init_country(self):
-        new_countries = [
+        aeat_countries = [
             {'name': 'Islas del Canal', 'code': '20'},
             {'name': 'Busingen', 'code': '30'},
             {'name': 'Helgoland', 'code': '31'},
@@ -61,6 +61,13 @@ class res_country(models.Model):
 
         paises_ue = ['DE','AT','BE','BG','CY','HR','DK','SK','SI','ES','EE','FI','FR','EL','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','CZ','RO','SE']
 
-        self.env['res.country'].create(new_countries)
+        countries = self.env['res.country'].search([('code', 'in', [x['code'] for x in aeat_countries])])
+
+        exists_countries = [country.code for country in countries]
+        new_countries = [x for x in aeat_countries if x['code'] not in exists_countries]
+
+        if new_countries:
+            self.env['res.country'].create(new_countries)
+
         c = self.env['res.country'].search([('code','not in',paises_ue)])
         c.write({'aeat_allow': True})
