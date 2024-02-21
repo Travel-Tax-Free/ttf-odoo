@@ -141,7 +141,7 @@ odoo.define('pos_taxfree.models_extend', function(require){
             }
 
             if (order.get_total_tax()==0) {
-                return verificaciones.reject({code:'9898', message:'La factura no tiene IVA', error_taxfree:true});
+                return verificaciones.reject({code:'9584', message:'La factura no tiene IVA', error_taxfree:true});
             }
 
 

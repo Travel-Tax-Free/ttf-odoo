@@ -184,6 +184,11 @@ odoo.define('pos_taxfree.screens_extend', function(require){
                             self.gui.show_screen('clientlist', null, refresh_screen);
                         },
                     });
+            } else if ("code" in error && error['code'] == '9584') {
+                this.gui.show_popup('error',{
+                    'title': _t('VAT Incorrect'),
+                    'body': _t('The invoice does not have VAT'),    
+                });
             } else {
                 return this._super(order, refresh_screen, error);
             }
