@@ -13,6 +13,8 @@ class res_partner(models.Model):
 
     date_birthdate = fields.Date(string="Date birthdate")
     passport = fields.Char(string="Passport")
+    passport_country_id = fields.Many2one("res.country",string="Passport country")
+    same_country = fields.Boolean("Same country")
 
     def _generate_code(self, msg=None):
         return Utils.generate_code(error='9587',msg=msg)
@@ -41,6 +43,7 @@ class res_partner(models.Model):
             return self._generate_code(msg='Los turistas del residentes en Irlanda del Norte, no tienen derecho al tax free')
         else:
             return self._generate_code()
+
 
 
     @api.model

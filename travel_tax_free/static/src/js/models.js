@@ -7,7 +7,7 @@ odoo.define('pos_taxfree.models_extend', function(require){
 
     for(var i=0; i<models.length; i++){
         if(models[i].model === 'res.partner'){
-             models[i].fields.push('passport','date_birthdate','id');
+             models[i].fields.push('passport','date_birthdate','id','passport_country_id');
         }
 
     }

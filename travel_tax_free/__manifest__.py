@@ -3,7 +3,7 @@
 
 {
     'name': 'Travel Tax Free Integration',
-    'version': '1.10',
+    'version': '1.11',
     'author': 'Travel Tax Free',
     'description': """
 Travel Tax Free Integration

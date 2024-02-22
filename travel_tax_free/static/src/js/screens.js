@@ -187,7 +187,7 @@ odoo.define('pos_taxfree.screens_extend', function(require){
             } else if ("code" in error && error['code'] == '9584') {
                 this.gui.show_popup('error',{
                     'title': _t('VAT Incorrect'),
-                    'body': _t('The invoice does not have VAT'),    
+                    'body': _t('The invoice does not have VAT'),
                 });
             } else {
                 return this._super(order, refresh_screen, error);
@@ -308,6 +308,7 @@ odoo.define('pos_taxfree.screens_extend', function(require){
                         var name = campos[0];
                         var country = campos[2];
                         var passport = campos[1];
+
                         var date = $.datepicker.parseDate('yymmdd', campos[3]);
 
                         self.set_client_details(name,passport,date,country);
@@ -335,7 +336,6 @@ odoo.define('pos_taxfree.screens_extend', function(require){
                     } catch(err) {
                         alert("Pasaporte/QR introducido erroneo");
                         return;
-
                     }
 
                     var name = opcion.substring(5,44).replaceAll("<"," ").replaceAll(";"," ").replaceAll('0',"O").replaceAll("1","I").replaceAll(/\s\s+/g, ' ').trim();
@@ -344,8 +344,6 @@ odoo.define('pos_taxfree.screens_extend', function(require){
 
                     self.set_client_details(name,passport,date,country);
                     opcion = null;
-
-
 
                 } else {
                     alert("Pasaporte/QR introducido erroneo");
@@ -356,15 +354,23 @@ odoo.define('pos_taxfree.screens_extend', function(require){
 
         set_client_details: function(name,passport,datebirth,country) {
             var self = this;
-            $('.detail.client-name').val(name);
-            $('.detail.client-passport').val(passport);
-            $('.detail.client-birthdate').val(datebirth.toISOString().split('T')[0]);
+            const eu_countries = ['BE','BG','CZ','DK','DE','EE','IE','EL','ES','FR','HR','IT','CY','LV','LT','LU','HU','MT','NL','AT','PL','PT','RO','SI','SK','FI','SE'];
 
             if (country.length==2) {
                 iso2 = country;
-            } else {
+            } else if (iso3166.codes.hasOwnProperty(country)) {
                 iso2 = iso3166.codes[country];
+            } else {
+                alert("Pasaporte/QR introducido erroneo");
+                return;
             }
+
+            datebirth.setHours(12);
+            d = datebirth.toISOString().split('T')[0];
+
+            $('.detail.client-name').val(name);
+            $('.detail.client-passport').val(passport);
+            $('.detail.client-birthdate').val(d);
 
             if (iso2!=undefined) {
                 var res = rpc.query({
@@ -375,11 +381,32 @@ odoo.define('pos_taxfree.screens_extend', function(require){
                 }).then(function (country_id) {
                     if (country_id.length > 0 && country_id[0]["id"]) {
                         if (self.pos.config.experimental_country) {
-                            var $select = $('select[name="country_id"]').selectize();
-                            $select[0].selectize.setValue(country_id[0]["id"]);
+                            var $select_ac = $('select[name="country_id"]').selectize();
+                            var $select_pc = $('select[name="passport_country_id"]').selectize();
+                            if (eu_countries.includes(iso2)) {
+                                $('.detail.client-checkbox').prop("checked", false);
+                                $select_ac[0].selectize.setValue("");
+                                $('#passport_country').show();
+                                $select_pc[0].selectize.setValue(country_id[0]["id"]);
+                                setTimeout(function(){alert("País no permitido para realizar tax free. Introduzca el país de residencia manualmente");},200);
+                            } else {
+                                $select_ac[0].selectize.setValue(country_id[0]["id"]);
+                                $select_pc[0].selectize.setValue(country_id[0]["id"]);
+                            }
                         } else {
-                            $('.detail.client-address-country').val(country_id[0]["id"]).change();
+                            if (eu_countries.includes(iso2)) {
+                                $('.detail.client-checkbox').prop("checked", false);
+                                $('.detail.client-address-country').val("").change();
+                                $('#passport_country').show();
+                                $('.detail.client-passport-country').val(country_id[0]["id"]).change();
+                                setTimeout(function(){alert("País no permitido para realizar tax free. Introduzca el país de residencia manualmente");},200);
+                            } else {
+                                $('.detail.client-address-country').val(country_id[0]["id"]).change();
+                                $('.detail.client-passport-country').val(country_id[0]["id"]).change();
+                            }
                         }
+
+
                     }
                 });
 

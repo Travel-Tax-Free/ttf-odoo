@@ -7,6 +7,54 @@
                 <input class='detail client-passport' name='passport' t-att-value='partner.passport || ""'
                        placeholder="Pasaporte"></input>
             </div>
+            <br/>
+            <div class='client-detail'>
+                <span><strong>País de residencia igual al país de pasaporte </strong></span>
+                <input type='checkbox' class='detail client-checkbox' style='max-width: 15px;' id='same_country'
+                name='same_country' t-att-checked="partner.passport_country_id ? None : 'checked'"
+                onchange="document.getElementById('passport_country').style.display=(this.checked)?'none':'block';"></input>
+            </div>
+            <br/>
+            <t t-if="!partner.passport_country_id">
+                <script>
+                    $("#passport_country").hide();
+                </script>
+            </t>
+            <div id='passport_country' class='client-detail'>
+                <span class='label'>País de pasaporte</span>
+                <select class='detail client-passport-country needsclick' name='passport_country_id' id='pass_param'>
+                    <option id="empty" value=''>None</option>
+                    <t t-foreach='widget.pos.countries' t-as='country'>
+                        <option t-att-value='country.id' t-att-selected="partner.passport_country_id ? ((country.id === partner.passport_country_id[0]) ? true : undefined) : undefined">
+                            <t t-esc='country.name'/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+            <script>
+                $(function() {
+                    if ($("#pass_param").val() == "" || $("#pass_param").val() == $("#country_param").val()) {
+                        $("#pass_param").val($("#country_param").val());
+                        $("#passport_country").hide();
+                        $("#same_country").prop("checked", true);
+                    }
+                });
+
+                $("#country_param").change(function() {
+                    if ($("#same_country").is(':checked')) {
+                        $("#pass_param").val($("#country_param").val());
+                    }
+                });
+
+                $("#same_country").click(function() {
+                    if (this.checked) {
+                        $("#pass_param").val($("#country_param").val());
+                        $("#passport_country").hide();
+                    } else {
+                        $("#passport_country").show();
+                    }
+                });
+            </script>
         </xpath>
         <xpath expr="//div[@class='client-details-right']" position="inside">
             <div class='client-detail'>
@@ -22,7 +70,7 @@
         </xpath>
         <xpath expr="//select[@class='detail client-address-country needsclick']" position="replace">
                         <div style="padding: 0px 0px 4px 0px; width: 340px; display: inline-block;">
-                        <select class='detail client-address-country needsclick' name='country_id'>
+                        <select class='detail client-address-country needsclick' name='country_id' id='country_param'>
                             <option value=''>None</option>
                             <t t-foreach='widget.pos.countries' t-as='country'>
                                 <option t-att-value='country.id' t-att-selected="partner.country_id ? ((country.id === partner.country_id[0]) ? true : undefined) : undefined">
@@ -31,13 +79,39 @@
                             </t>
                         </select></div>
             <t t-if='widget.pos.config.experimental_country'>
-            <script>
-                $(function() {
-                    var $select = $('select[name="country_id"]').selectize();
-                    $('div.selectize-control').removeClass('client-details-contents detail');
-                    $('div.selectize-dropdown').removeClass('client-details-contents detail');
-                });
-            </script>
+                <script>
+                    var $select_ac = $('select[name="country_id"]').selectize();
+                    var $select_pc = $('select[name="passport_country_id"]').selectize();
+
+                    $(function() {
+                        $('div.selectize-control').removeClass('client-details-contents detail');
+                        $('div.selectize-dropdown').removeClass('client-details-contents detail');
+                    });
+
+                    $(function() {
+                        if ($("#pass_param").val() == "" || $("#pass_param").val() == $("#country_param").val()) {
+                            $select_pc[0].selectize.setValue($("#country_param").val());
+                            $("#passport_country").hide();
+                            $("#same_country").prop("checked", true);
+                        }
+                    });
+
+                    $("#country_param").change(function() {
+                        if ($("#same_country").is(':checked')) {
+                            $select_pc[0].selectize.setValue($("#country_param").val());
+                        }
+                    });
+
+                    $("#same_country").click(function() {
+                        if (this.checked) {
+                            $select_pc[0].selectize.setValue($("#country_param").val());
+                            $("#passport_country").hide();
+                        } else {
+                            $("#passport_country").show();
+                            $("#empty").hide();
+                        }
+                    });
+                </script>
             </t>
         </xpath>
     </t>

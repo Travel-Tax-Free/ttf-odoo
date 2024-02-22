@@ -52,7 +52,8 @@ class TravelClient:
         data = {
             'tourist_name': invoice.partner_id.name,
             'tourist_passport': invoice.partner_id.passport,
-            'tourist_country': invoice.partner_id.country_id.code,
+            'tourist_resident_country': invoice.partner_id.country_id.code,
+            'tourist_passport_country': invoice.partner_id.country_id.code if not invoice.partner_id.passport_country_id.code else invoice.partner_id.passport_country_id.code,
             'tourist_birthdate': invoice.partner_id.date_birthdate.strftime('%Y%m%d'),
             'invoice_number': invoice.name,
             'print_size': self.format,
@@ -63,7 +64,8 @@ class TravelClient:
         if invoice.partner_id.zip:
             data['tourist_zip'] = invoice.partner_id.zip
 
-        #_logger.info('CHECK {}'.format(data))
+        if invoice.partner_id.email:
+            data['tourist_email'] = invoice.partner_id.email
 
         response = {
             'number': '123456',
