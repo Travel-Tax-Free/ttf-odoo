@@ -21,15 +21,17 @@
                 </script>
             </t>
             <div id='passport_country' class='client-detail'>
-                <span class='label'>País de pasaporte</span>
-                <select class='detail client-passport-country needsclick' name='passport_country_id' id='pass_param'>
+                <table width='86%'><tr>
+                <td width='20%'><span class='label'><strong>País de pasaporte</strong></span></td>
+                <td width='80%'><select class='detail client-passport-country needsclick' name='passport_country_id' id='pass_param'>
                     <option id="empty" value=''>None</option>
                     <t t-foreach='widget.pos.countries' t-as='country'>
                         <option t-att-value='country.id' t-att-selected="partner.passport_country_id ? ((country.id === partner.passport_country_id[0]) ? true : undefined) : undefined">
                             <t t-esc='country.name'/>
                         </option>
                     </t>
-                </select>
+                </select></td>
+                </tr></table>
             </div>
             <script>
                 $(function() {
