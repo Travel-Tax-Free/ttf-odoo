@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-# TraveltaxFree 2022 ©
+# TraveltaxFree 2024 ©
 import logging
 
-from odoo import models, api, fields, exceptions, http, _
+from odoo import models, api, fields, http, _
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -12,9 +13,10 @@ class pos_order(models.Model):
 
     x_tax_free = fields.Boolean(string="Tax free")
 
+    @api.constrains('account_move')
     def generate_taxfree_from_order(self, pos=True):
         if not self.account_move:
-            raise Warning("El pedido {} no tiene factura asociada".format(self.pos_reference))
+            raise ValidationError(_("El pedido {} no tiene factura asociada".format(self.pos_reference)))
         else:
             response = self.account_move.generate_taxfree_from_invoice(pos=pos)
             if 'code' in response and response['code'] == '0000':

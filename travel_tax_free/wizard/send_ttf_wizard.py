@@ -47,7 +47,7 @@ class sendTTFWizard(models.TransientModel):
         response = invoice.generate_taxfree_from_invoice()
 
         if not 'code' in response or response['code']!='0000':
-            raise exceptions.Warning('Error creando tax free. Detalles: {}'.format(response))
+            raise exceptions.ValidationError('Error creando tax free. Detalles: {}'.format(response))
         else:
 
             new = self.create({'attach': response['check']})

@@ -14,7 +14,7 @@ class res_partner(models.Model):
     date_birthdate = fields.Date(string="Date birthdate")
     passport = fields.Char(string="Passport")
     passport_country_id = fields.Many2one("res.country",string="Passport country")
-    same_country = fields.Boolean("Same country")
+    same_country = fields.Boolean(string="Same country")
 
     def _generate_code(self, msg=None):
         return Utils.generate_code(error='9587',msg=msg)
@@ -54,5 +54,18 @@ class res_partner(models.Model):
             partner['category_id'] = [(4,int(category_id))]
 
         return super(res_partner, self).create_from_ui(partner)
+
+
+class pos_session(models.Model):
+    _inherit = 'pos.session'
+
+    def _loader_params_res_partner(self):
+
+        result = super()._loader_params_res_partner()
+        result['search_params']['fields'].append('date_birthdate')
+        result['search_params']['fields'].append('passport')
+        result['search_params']['fields'].append('passport_country_id')
+        result['search_params']['fields'].append('same_country')
+        return result
 
 

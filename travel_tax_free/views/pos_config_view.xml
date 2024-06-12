@@ -6,7 +6,7 @@
             <field name="model">pos.config</field>
             <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
             <field name="arch" type="xml">
-                <div id="iface_invoicing" position="after">
+                <div id="other_devices" position="after">
                         <div class="col-12 col-lg-6 o_setting_box pos_taxfree">
                             <div class="o_setting_right_pane">
                                 <label for="travel_user_id"/>

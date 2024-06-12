@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="PartnerDetailsEdit" t-inherit="point_of_sale.PartnerDetailsEdit" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('partner-details-left')]" position="inside">
+            <div class='partner-detail'>
+                <span class='label'>Pasaporte</span>
+                <input class='detail partner-passport' name='passport'
+                       t-model='changes.passport' t-on-change='captureChange'
+                       placeholder="Pasaporte"></input>
+            </div>
+            <br/>
+            <div class='partner-detail' t-on-click="">
+                <label for='same_country'><strong>País de residencia igual al país de pasaporte </strong></label>
+                <input type='checkbox' class='detail partner-checkbox' style='max-width: 15px;' id='same_country'
+                name='same_country'></input>
+                <!-- onchange="document.getElementById('passport_country').style.display=(this.checked)?'none':'block';"
+                t-att-checked="props.partner.passport_country_id ? None : 'checked'" -->
+            </div>
+            <br/>
+            <!-- <t t-if="!props.partner.passport_country_id">
+                <script>
+                    $("#passport_country").hide();
+                </script>
+            </t> -->
+            <div id='passport_country' class='partner-detail'>
+                <span class='label'>País de pasaporte</span>
+                <div style="padding: 0px 0px 4px 0px; width: 340px; display: inline-block;">
+                    <select class='detail partner-passport-country needsclick custom-select' name='passport_country_id' id='pass_param'
+                            t-model='changes.passport_country_id' t-on-change='captureChange'>
+                        <option value=''>None</option>
+                        <t t-foreach='env.pos.countries' t-as='country' t-key='country.id'>
+                            <option t-att-value='country.id'>
+                                <t t-esc='country.name'/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+            </div>
+            <script>
+                $(function() {
+                    if ($("#pass_param").val() == "" || $("#pass_param").val() == $("#country_param").val()) {
+                        $("#pass_param").val($("#country_param").val());
+                        $("#passport_country").hide();
+                        $("#same_country").prop("checked", true);
+                    }
+                });
+
+                $("#country_param").change(function() {
+                    if ($("#same_country").is(':checked')) {
+                        $("#pass_param").val($("#country_param").val());
+                    }
+                    console.log($("#country_param").val());
+                    console.log($("#pass_param").val());
+                });
+
+                $("#pass_param").change(function() {
+                    if ($("#pass_param").val() == $("#country_param").val() || $("#pass_param").val() == "") {
+                        $("#pass_param").val($("#country_param").val());
+                        $("#passport_country").hide();
+                        $("#same_country").prop("checked", true);
+                    }
+                    console.log($("#country_param").val());
+                    console.log($("#pass_param").val());
+                });
+
+                $("#same_country").click(function() {
+                    $("#pass_param").val($("#country_param").val());
+                    if (this.checked) {
+                        $("#passport_country").hide();
+                    } else {
+                        $("#passport_country").show();
+                    }
+                });
+            </script>
+        </xpath>
+        <xpath expr="//div[@class='partner-details-right']" position="inside">
+            <div class='partner-detail'>
+                <span class='label'>Fecha de nacimiento</span>
+                <input type="date" class='detail partner-birthdate' name='date_birthdate'
+                       t-model='changes.date_birthdate' t-on-change='captureChange'
+                       placeholder="mm/dd/yyyy"></input>
+            </div>
+        </xpath>
+        <!-- <xpath expr="//div[hasclass('partner-details-right')]" position="inside">
+            <div class='button scan-passport' t-on-click='scan_client_details'>
+                <i class='fa fa-qrcode' role="img" aria-label="Scanner" title="Scanner"/>
+            </div>
+        </xpath> -->
+        <xpath expr="//select[@name='country_id']" position="replace">
+            <div style="padding: 0px 0px 4px 0px; width: 340px; display: inline-block;">
+                <select class='detail partner-address-country needsclick custom-select' name='country_id' id='country_param' t-model='changes.country_id' t-on-change='captureChange'>
+                    <option value=''>None</option>
+                    <t t-foreach='env.pos.countries' t-as='country' t-key='country.id'>
+                        <option t-att-value='country.id'>
+                            <t t-esc='country.name'/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+            <t t-if='env.pos.config.experimental_country'>
+                <script>
+                    <!-- $('.custom-select').selectize(); -->
+                    var $select_ac = $('select[name="country_id"]').selectize();
+                    var $select_pc = $('select[name="passport_country_id"]').selectize();
+                    <!-- console.log($('select[name="country_id"]').selectize());
+                    console.log($('select[name="passport_country_id"]').selectize()); -->
+
+                    <!-- $(function() {
+                        $('div.selectize-control').removeClass('partner-detail detail');
+                        $('div.selectize-dropdown').removeClass('partner-detail detail');
+                    });
+
+                    $(function() {
+                        if ($("#pass_param").val() == "" || $("#pass_param").val() == $("#country_param").val()) {
+                            $select_pc[0].selectize.setValue($("#country_param").val());
+                            $("#passport_country").hide();
+                            $("#same_country").prop("checked", true);
+                        }
+                    });
+
+                    $("#country_param").change(function() {
+                        if ($("#same_country").is(':checked')) {
+                            $select_pc[0].selectize.setValue($("#country_param").val());
+                        }
+                    });
+
+                    $("#same_country").click(function() {
+                        if (this.checked) {
+                            $select_pc[0].selectize.setValue($("#country_param").val());
+                            $("#passport_country").hide();
+                        } else {
+                            $("#passport_country").show();
+                            $("#empty").hide();
+                        }
+                    }); -->
+                </script>
+            </t>
+        </xpath>
+    </t>
+    <t t-name="PartnerListScreen" t-inherit="point_of_sale.PartnerListScreen" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('more-info')]" position="before">
+            <div t-if='state.detailIsShown' class='button scan-passport' t-on-click='scan_client_details'>
+                <i class='fa fa-qrcode' role="img" aria-label="Scanner" title="Scanner"/>
+            </div>
+            <t t-if='env.pos.config.experimental_country'>
+                <script>
+                    <!-- $(function() {
+                        $('div.selectize-control').removeClass('partner-details-contents detail');
+                        $('div.selectize-dropdown').removeClass('partner-details-contents detail');
+                    }); -->
+                </script>
+            </t>
+        </xpath>
+    </t>
+</templates>

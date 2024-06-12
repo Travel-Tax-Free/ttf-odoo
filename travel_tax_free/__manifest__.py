@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Travel Tax Free 2022 ©
+# Travel Tax Free 2024 ©
 
 {
     'name': 'Travel Tax Free Integration',
@@ -17,9 +17,6 @@ Travel Tax Free Integration
     'data': [
     #    'security/groups.xml',
         'security/ir.model.access.csv',
-
-        'static/src/xml/pos_templates.xml',
-
         'data/data.xml',
         'views/res_partner_view.xml',
         'views/res_country_view.xml',
@@ -31,7 +28,21 @@ Travel Tax Free Integration
         'wizard/send_ttf_wizard_view.xml',
     ],
     'qweb': [
-        'static/src/xml/pos.xml',
+
     ],
     'installable': True,
+    'assets':{
+        'point_of_sale.assets': [
+            "travel_tax_free/static/src/js/models.js",
+            "travel_tax_free/static/src/js/selectize.js",
+            "travel_tax_free/static/src/js/iso3166.js",
+            "travel_tax_free/static/src/css/selectize.css",
+            "travel_tax_free/static/src/xml/pos_invoice_taxfree.xml",
+            "travel_tax_free/static/src/js/pos_invoice_taxfree.js",
+            "travel_tax_free/static/src/xml/pos_print_taxfree.xml",
+            "travel_tax_free/static/src/js/pos_print_taxfree.js",
+            "travel_tax_free/static/src/xml/pos_partner_edit.xml",
+            "travel_tax_free/static/src/js/pos_partner_edit.js",
+        ],
+    },
 }

@@ -1,6 +1,6 @@
 import logging
 
-from odoo import exceptions
+from odoo.exceptions import ValidationError
 from .travel_request import TravelRequest
 from .util import Utils
 
@@ -82,7 +82,7 @@ class TravelClient:
                 user = default[0].user
                 password = default[0].key
             else:
-                raise exceptions.Warning('No se ha encontrado usuario por defecto')
+                raise ValidationError(_('No se ha encontrado usuario por defecto'))
 
         response = TravelRequest(user=user, password=password, url=self.url).generate_taxfree(data)
 

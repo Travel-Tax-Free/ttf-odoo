@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_travel_users,access_travel_users,model_travel_users,,1,1,1,1
+access_taxfree_wizard_sendttf,taxfree.wizard.sendttf,model_taxfree_wizard_sendttf,,1,1,1,1

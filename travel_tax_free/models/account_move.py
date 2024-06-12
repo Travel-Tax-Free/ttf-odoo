@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# TraveltaxFree 2022 ©
+# TraveltaxFree 2024 ©
 import logging
 
 from odoo.addons.travel_tax_free.controllers.travel_client import TravelClient
@@ -63,20 +63,20 @@ class account_move(models.Model):
             return response
         else:
             if not 'code' in response:
-                raise exceptions.Warning('Error creando tax free. Detalles: {}'.format(response))
+                raise exceptions.ValidationError(_('Error creando tax free. Detalles: {}'.format(response)))
             elif response['code'] != '0000':
                 if response['code'] == '9587':
-                    raise exceptions.Warning('El turista no pasa las verificaciones. Detalles: {}'.format(response['msg']))
+                    raise exceptions.ValidationError(_('El turista no pasa las verificaciones. Detalles: {}'.format(response['msg'])))
                 elif response['code'] == '9586':
-                    raise exceptions.Warning('La factura no pasa las verificaciones. Detalles: {}'.format(response['msg']))
+                    raise exceptions.ValidationError(_('La factura no pasa las verificaciones. Detalles: {}'.format(response['msg'])))
                 elif response['code'] == '9585':
-                    raise exceptions.Warning('Error creando tax free. Detalles: {}'.format(response['msg']))
+                    raise exceptions.ValidationError(_('Error creando tax free. Detalles: {}'.format(response['msg'])))
                 else:
-                    raise exceptions.Warning('Error {} no especifico. {}'.format(response['code'], response['msg'] if 'msg' in response else ''))
+                    raise exceptions.ValidationError(_('Error {} no especifico. {}'.format(response['code'], response['msg'] if 'msg' in response else '')))
 
     def remove_taxfree(self):
         if not self.taxfree:
-            raise exceptions.Warning('La factura {} no tiene un taxfree asociado'.format(self.name))
+            raise exceptions.ValidationError(_('La factura {} no tiene un taxfree asociado'.format(self.name)))
 
         if self.taxfree_id:
             self.taxfree_id.unlink()

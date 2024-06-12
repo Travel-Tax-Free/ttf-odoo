@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <t t-inherit="point_of_sale.ReceiptScreen" t-inherit-mode="extension">
+        <xpath expr="//div[@class='button print']" position="after">
+            <div t-if="currentOrder.is_to_taxfree()" class="button print_taxfree" t-on-click="click_print_taxfree">
+                <i class='fa fa-print' role="img" aria-label="Print Taxfree Button" title="Print Taxfree Button" />
+                Imprimir tax free
+            </div>
+        </xpath>
+    </t>
+
+</templates>
