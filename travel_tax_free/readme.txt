@@ -1,4 +1,4 @@
-Integración ODOO 13 con Travel Tax Free
+Integración ODOO 16 con Travel Tax Free
 =======================================
 
 Requisitos
@@ -17,9 +17,9 @@ Dentro de ajustes -> Travel Tax Free, tendremos las siguientes opciones:
 * Formato. Dependiendo de la selección, el documento tax free será un A4 o un ticket
 * Categoría. En el caso de que se requiera, se puede poner que se asigne una categoría a todo cliente que se cree/edit desde la extranet
 * Email requerido. Si es true, verificará que lleva email a la hora de guardarlo. Independientemente de su valor, si lleva email verificará que esté en el formato correcto.
-* Cambio de selector. ¡Experimental! Cambia el selector de paises (requiere reiniciar POS)
+* Cambio de selector. ¡Experimental y por desarrollar en v16! Cambia el selector de paises (requiere reiniciar POS)
 
-En los ajustos del POS, debe de estar activado el check de contabilidad. 
+En los ajustes del POS, debe de estar activado el check de contabilidad. 
 
 Funcionamiento
 --------------
