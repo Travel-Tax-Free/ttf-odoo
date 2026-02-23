@@ -19,8 +19,12 @@ class res_partner(models.Model):
     def _generate_code(self, msg=None):
         return Utils.generate_code(error='9587',msg=msg)
 
-    def test_tourist_id(self, id):
-        return self.search([('id','=',id)])[0].test_tourist()
+    @api.model
+    def test_tourist_id(self, partner_id):
+        partner = self.browse(partner_id)
+        if not partner.exists():
+            return {'code': '404', 'msg': 'Cliente no encontrado'}
+        return partner.test_tourist()
 
     def test_tourist(self):
         if self.company_type != 'person':
@@ -35,12 +39,12 @@ class res_partner(models.Model):
             return self._generate_code(msg='País {} no permitido para realizar tax free'.format(self.country_id.name))
         elif not self.date_birthdate:
             return self._generate_code(msg='Falta fecha de nacimiento')
-        elif relativedelta(datetime.now().date(), self.date_birthdate).years<16:
-            return self._generate_code(msg='El turista tiene menos de 16 años')
+        elif relativedelta(datetime.now().date(), self.date_birthdate).years<5:
+            return self._generate_code(msg='El turista tiene menos de 5 años')
         elif self.country_id.code == 'GB' and (not self.zip or len(self.zip) == 0):
-            return self._generate_code(msg='Los turistas del Reino Unido deben de rellenar el código postal')
+            return self._generate_code(msg='Los turistas del Reino Unido deben rellenar el código postal')
         elif self.country_id.code == 'GB' and self.zip.upper().startswith("BT"):
-            return self._generate_code(msg='Los turistas del residentes en Irlanda del Norte, no tienen derecho al tax free')
+            return self._generate_code(msg='Los turistas residentes en Irlanda del Norte no tienen derecho al tax free')
         else:
             return self._generate_code()
 
