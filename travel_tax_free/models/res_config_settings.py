@@ -15,16 +15,16 @@ class ResConfigSettings(models.TransientModel):
     taxfree_serial = fields.Boolean(string='Enviar número de serie', config_parameter='base.taxfree_serial')
     taxfree_category_id = fields.Many2one('res.partner.category', string='Categoria', config_parameter='base.taxfree_category_id')
     taxfree_email_required = fields.Boolean(string='Email requerido', config_parameter='base.taxfree_email_required')
-    taxfree_selectize_country = fields.Boolean(string='Selector paises', config_parameter='base.taxfree_selectize_country')
+    # taxfree_selectize_country = fields.Boolean(string='Selector paises', config_parameter='base.taxfree_selectize_country')
     #taxfree_users = fields.Many2many('travel.users', string="Usuarios")
 
     def open_users(self):
         return {
             'name': 'Travel Users',
-            'view_type': 'form',
-            'view_mode': 'tree,form',
-            'view_id': False,
-            'res_model': 'travel.users',
             'type': 'ir.actions.act_window',
-            'target': 'main',
+            'res_model': 'travel.users',
+            'view_mode': 'list,form',
+            'views': [(False, 'list'), (False, 'form')],
+            'target': 'current',
+            'context': self._context,
         }

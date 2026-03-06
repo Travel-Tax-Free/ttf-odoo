@@ -5,27 +5,32 @@
         <field name="model">travel.users</field>
         <field name="arch" type="xml">
             <form string="Usuarios Travel">
-                <group col="4" colspan="4">
-                    <field name="name"/>
-                    <field name="default"/>
-                    <field name="user" />
-                    <field name="key" />
-                    <field name="pos_ids" widget="many2many_tags" options="{'no_create': True, 'no_create_edit': True, 'no_open': False}" domain="[('travel_user_id','=',None)]" />
-                </group>
+                <sheet> <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="user" />
+                            <field name="key" password="True" /> </group>
+                        <group>
+                            <field name="default"/>
+                            <field name="pos_ids" 
+                                   widget="many2many_tags" 
+                                   options="{'no_create': True, 'no_create_edit': True}" 
+                                   domain="[('travel_user_id', '=', False)]" />
+                        </group>
+                    </group>
+                </sheet>
             </form>
         </field>
     </record>
 
     <record id="ttf_users_tree_view" model="ir.ui.view">
-        <field name="name">ttf_users_form</field>
-        <field name="model">travel.users</field>
+        <field name="name">ttf_users_list</field> <field name="model">travel.users</field>
         <field name="arch" type="xml">
-            <tree string="Travel users">
-                    <field name="name"/>
-                    <field name="default"/>
-                    <field name="user" />
-                    <field name="pos_ids" widget="many2many_tags"/>
-            </tree>
+            <list string="Travel users">
+                <field name="name"/>
+                <field name="default" widget="boolean_toggle"/> <field name="user" />
+                <field name="pos_ids" widget="many2many_tags"/>
+            </list>
         </field>
     </record>
 </odoo>

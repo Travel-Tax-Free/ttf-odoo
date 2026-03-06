@@ -1,4 +1,4 @@
-from odoo import models, api, fields, exceptions, http, _
+from odoo import models, api, fields, exceptions, _
 
 class ProductTemplate(models.Model):
 

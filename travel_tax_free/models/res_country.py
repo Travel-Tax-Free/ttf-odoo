@@ -2,7 +2,7 @@
 # TraveltaxFree 2024 ©
 import pycountry
 
-from odoo import models, api, fields, exceptions, http, _
+from odoo import models, api, fields, exceptions, _
 
 class res_country(models.Model):
 
