@@ -6,128 +6,43 @@
         <field name="priority" eval="95"/>
         <field name="inherit_id" ref="base.res_config_settings_view_form" />
         <field name="arch" type="xml">
-            <xpath expr="//div[hasclass('settings')]" position="inside">
-                <div class="app_settings_block" data-string="Travel Tax Free" string="Travel Tax Free" data-key="taxfree">
-                    <h2>Configuración para Travel Tax Free</h2>
-                    <div class="row mt16 o_settings_container">
-                        <div class="col-12 col-lg-6 o_setting_box">
-                            <div class="o_setting_right_pane">
-                                <div>
-                                    <label string="URL de conexión" for="taxfree_url"/>
-                                    <div class="content-group mt16">
-                                        <field name="taxfree_url" />
-                                    </div>
-                                </div>
+            <xpath expr="//form" position="inside">
+                <app data-string="Travel Tax Free" string="Travel Tax Free" name="travel_tax_free">
+                    
+                    <block title="Configuración para Travel Tax Free" id="taxfree_config_base">
+                        <setting id="taxfree_url_setting" help="URL de la API para la conexión">
+                            <field name="taxfree_url"/>
+                        </setting>
+                        
+                        <setting id="taxfree_users_setting">
+                            <div class="mt-2">
+                                <button type='object' name='open_users' string="Lista de usuarios" class="btn-primary"/>
                             </div>
-                        </div>
-                        <!--
-                        <div class="col-12 col-lg-6 o_setting_box">
-                            <div class="o_setting_right_pane">
-                                <div>
-                                    <label string="Usuario" for="taxfree_user"/>
-                                    <div class="content-group mt16">
-                                        <field name="taxfree_user" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label string="Password" for="taxfree_password"/>
-                                    <div class="content-group mt16">
-                                        <field name="taxfree_password" password="True" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        -->
-                        <div class="col-12 col-lg-6 o_setting_box">
-                            <div class="o_setting_right_pane">
-                                <div>
-                                    <label string="Usuarios" for="open_users"/>
-                                    <div class="content-group mt16" >
-                                        <button type='object' name='open_users' string="Lista de usuarios" class="oe_highlight"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        </setting>
+                    </block>
 
-                    </div>
-                    <h2>Opciones</h2>
-                    <div class="row mt16 o_settings_container">
-                        <div class="col-12 col-lg-6 o_setting_box">
-                            <div class="o_setting_left_pane">
-                                <field name="taxfree_attach"/>
-                            </div>
-                            <div class="o_setting_right_pane">
-                                <label for="taxfree_attach"/>
-                                <div class="text-muted">
-                                    Adjuntar el tax free al documento (se aconseja valor a True)
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-6 o_setting_box">
-                            <div class="o_setting_left_pane">
-                                <field name="taxfree_serial"/>
-                            </div>
-                            <div class="o_setting_right_pane">
-                                <label for="taxfree_serial"/>
-                                <div class="text-muted">
-                                    Enviar número de serie del producto si existe.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-6 o_setting_box">
-                            <div class="o_setting_right_pane">
-                                <div>
-                                    <label string="Formato" for="taxfree_format"/>
-                                    <div class="text-muted">
-                                        Formato de impresión por defecto
-                                    </div>
+                    <block title="Opciones" id="taxfree_options">
+                        <setting id="taxfree_attach_setting" help="Adjuntar el tax free al documento (se aconseja valor a True)">
+                            <field name="taxfree_attach"/>
+                        </setting>
 
-                                    <div class="content-group mt16">
-                                        <field name="taxfree_format" required="True" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-6 o_setting_box">
-                            <div class="o_setting_right_pane">
-                                <div>
-                                    <label string="Categoría" for="taxfree_category_id"/>
-                                    <div class="text-muted">
-                                        Categoría cliente creado en TPV
-                                    </div>
+                        <setting id="taxfree_serial_setting" help="Enviar número de serie del producto si existe.">
+                            <field name="taxfree_serial"/>
+                        </setting>
 
-                                    <div class="content-group mt16">
-                                        <field name="taxfree_category_id"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-6 o_setting_box">
-                            <div class="o_setting_left_pane">
-                                <field name="taxfree_email_required"/>
-                            </div>
-                            <div class="o_setting_right_pane">
-                                <label for="taxfree_email_required"/>
-                                <div class="text-muted">
-                                    Email obligatorio en el cliente POS (requiere reiniciar POS)
-                                </div>
-                            </div>
-                        </div>
-                        <!-- <div class="col-12 col-lg-6 o_setting_box">
-                            <div class="o_setting_left_pane">
-                                <field name="taxfree_selectize_country"/>
-                            </div>
-                            <div class="o_setting_right_pane">
-                                <label for="taxfree_selectize_country"/>
-                                <div class="text-muted">
-                                    ¡Experimental! Cambia el selector de paises (requiere reiniciar POS)
-                                </div>
-                            </div>
-                        </div> -->
+                        <setting id="taxfree_format_setting" title="Formato de impresión por defecto">
+                            <field name="taxfree_format" required="1" />
+                        </setting>
 
-                    </div>
+                        <setting id="taxfree_category_setting" title="Categoría cliente creado en TPV">
+                            <field name="taxfree_category_id"/>
+                        </setting>
 
-                </div>
+                        <setting id="taxfree_email_setting" help="Email obligatorio en el cliente POS (requiere reiniciar POS)">
+                            <field name="taxfree_email_required"/>
+                        </setting>
+                    </block>
+                </app>
             </xpath>
         </field>
     </record>

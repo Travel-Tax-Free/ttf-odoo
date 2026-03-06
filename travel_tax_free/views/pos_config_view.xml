@@ -1,24 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-        <record id="pos_config_common_form" model="ir.ui.view">
-            <field name="name">pos_config_common_form</field>
-            <field name="model">pos.config</field>
-            <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
-            <field name="arch" type="xml">
-                <div id="other_devices" position="after">
-                        <div class="col-12 col-lg-6 o_setting_box pos_taxfree">
-                            <div class="o_setting_right_pane">
-                                <label for="travel_user_id"/>
-                                <div class="text-muted">
-                                    <field name='travel_user_id'/>
-                                </div>
-                            </div>
-                        </div>
-                </div>
+    <record id="pos_config_common_form" model="ir.ui.view">
+        <field name="name">pos.config.form.inherit.taxfree</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                
+                <group string="Travel Tax Free" name="taxfree_group">
+                    <field name="travel_user_id" placeholder="Seleccione usuario..."/>
+                </group>
 
-            </field>
-        </record>
-
-    </data>
+            </xpath>
+        </field>
+    </record>
 </odoo>

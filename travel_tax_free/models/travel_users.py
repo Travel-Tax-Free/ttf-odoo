@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # TraveltaxFree 2024 ©
 
-from odoo import models, api, fields, exceptions, http, _
+from odoo import models, api, fields, exceptions, _
 
 class travel_users(models.Model):
     _name = 'travel.users'

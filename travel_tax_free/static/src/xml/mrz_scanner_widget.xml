@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="travel_tax_free.MrzScannerWidget">
+        <div class="ms-auto d-flex align-items-center">
+            <button type="button"
+                    class="btn btn-secondary"
+                    t-on-click="scan"
+                    t-att-disabled="props.readonly"
+                    title="Escanear pasaporte o QR Tax Free">
+                <i class="fa fa-qrcode me-1"/> Escanear pasaporte/QR
+            </button>
+        </div>
+    </t>
+</templates>

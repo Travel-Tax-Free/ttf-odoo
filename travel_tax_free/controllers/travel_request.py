@@ -3,6 +3,10 @@ import hmac
 import hashlib
 import json
 import requests
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 class TravelRequest:
     url_create_check = '/api/ws/create_check'
@@ -13,24 +17,21 @@ class TravelRequest:
         self.url_base = url
 
     def _generate_sign(self, password, data):
-        #key_bytes = bytes(str(password), 'utf-8')
-        #sign = base64.b64encode(hmac.new(key_bytes, data.encode('utf-8'), digestmod=hashlib.sha256).digest())
-        sign =  base64.b64encode(hmac.new(password.encode(), data, digestmod=hashlib.sha256).digest())
+        sign = base64.b64encode(hmac.new(password.encode('utf-8'), data, digestmod=hashlib.sha256).digest())
         return sign.decode('utf-8')
 
     def _generate_request(self, url, data):
-        encode = base64.b64encode(json.dumps(data).encode())
+        encode_bytes = base64.b64encode(json.dumps(data).encode('utf-8'))
 
-        sign = self._generate_sign(self.password, encode)
-        # print('data: {}'.format(encode))
-        # print('sign: {}'.format(sign))
-        # print('{}?user={}&data={}&signature={}'.format(url,urllib.quote_plus(usuario),urllib.quote_plus(encode),urllib.quote_plus(sign)))
-        # return {'number': '1234'}
+        sign = self._generate_sign(self.password, encode_bytes)
 
-        r = requests.post(url, data={'user': self.user, 'data': encode, 'signature': sign})
+        encode_str = encode_bytes.decode('utf-8')
+
+        r = requests.post(url, data={'user': self.user, 'data': encode_str, 'signature': sign})
+
         if r.status_code != 200:
             return {
-                'message': u'Codigo {} no esperado: {}'.format(r.status_code, r.text)
+                'message': 'Codigo {} no esperado: {}'.format(r.status_code, r.text)
             }
 
         return json.loads(r.text)

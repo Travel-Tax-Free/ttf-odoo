@@ -32,17 +32,19 @@ Travel Tax Free Integration
     ],
     'installable': True,
     'assets':{
-        'point_of_sale.assets': [
+        'web.assets_backend': [
+            'travel_tax_free/static/src/js/mrz_scanner_widget.js',
+            'travel_tax_free/static/src/xml/mrz_scanner_widget.xml',
+        ],
+        'point_of_sale._assets_pos': [
             "travel_tax_free/static/src/js/models.js",
-            "travel_tax_free/static/src/js/selectize.js",
-            "travel_tax_free/static/src/js/iso3166.js",
-            "travel_tax_free/static/src/css/selectize.css",
-            "travel_tax_free/static/src/xml/pos_invoice_taxfree.xml",
             "travel_tax_free/static/src/js/pos_invoice_taxfree.js",
-            "travel_tax_free/static/src/xml/pos_print_taxfree.xml",
             "travel_tax_free/static/src/js/pos_print_taxfree.js",
-            "travel_tax_free/static/src/xml/pos_partner_edit.xml",
-            "travel_tax_free/static/src/js/pos_partner_edit.js",
+            "travel_tax_free/static/src/js/iso3166.js",
+            "travel_tax_free/static/src/js/mrz_scanner_widget.js",
+            "travel_tax_free/static/src/xml/pos_invoice_taxfree.xml",
+            "travel_tax_free/static/src/xml/pos_print_taxfree.xml",
+            "travel_tax_free/static/src/xml/mrz_scanner_widget.xml",
         ],
     },
 }

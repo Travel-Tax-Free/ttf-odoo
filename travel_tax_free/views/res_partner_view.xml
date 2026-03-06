@@ -5,12 +5,27 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
+
+            <xpath expr="//div[hasclass('d-flex') and hasclass('gap-3')]" position="inside">
+                <widget name="mrz_scanner" invisible="is_company"/>
+            </xpath>
+
+            <xpath expr="//div[@class='o_address_format']" position="after">
+                <field name="same_country"
+                       string="Mismo país de pasaporte"
+                       invisible="is_company"/>
+                <field name="passport_country_id"
+                       string="País de pasaporte"
+                       invisible="is_company or same_country"
+                       required="not is_company and not same_country"
+                       options="{'no_open': True}"/>
+            </xpath>
+
             <field name="function" position="after">
-                <field name="date_birthdate" attrs="{'invisible': [('is_company','=', True)]}" />
-                <field name="passport" attrs="{'invisible': [('is_company','=', True)]}" />
-                <field name="passport_country_id" attrs="{'invisible': [('is_company','=', True)]}" />
+                <field name="date_birthdate" invisible="is_company"/>
+                <field name="passport" invisible="is_company"/>
             </field>
+
         </field>
     </record>
 </odoo>
-

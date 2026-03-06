@@ -1,73 +1,93 @@
-odoo.define("pos_taxfree.PosInvoiceTaxfree", function(require){
-    'use strict';
+/** @odoo-module **/
 
-    const Registries = require('point_of_sale.Registries');
-    const PaymentScreen = require('point_of_sale.PaymentScreen');
-    const rpc = require('web.rpc');
-    const { Gui } = require('point_of_sale.Gui');
+import { PaymentScreen } from "@point_of_sale/app/screens/payment_screen/payment_screen";
+import { patch } from "@web/core/utils/patch";
+import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
+import { _t } from "@web/core/l10n/translation";
 
-    const PosInvoiceTaxfree = (PaymentScreen) =>
-        class PosInvoiceTaxfree extends PaymentScreen {
-            setup() {
-                super.setup();
+patch(PaymentScreen.prototype, {
+    async validateOrder(isForceValidate) {
+        const order = this.currentOrder;
+
+        const isTaxFree = order?.is_to_taxfree() || false;
+        const partner   = order?.partner_id;
+
+        // Validación antes de confirmar pedido
+        if (isTaxFree) {
+            if (!partner) {
+                this.pos.dialog.add(AlertDialog, {
+                    title: _t("Error Tax Free"),
+                    body: _t("Seleccione un cliente antes de continuar."),
+                });
+                return;
+            }
+            const orm = this.env.services.orm;
+            const res = await orm.call(
+                "res.partner", "test_tourist_id", [partner.id]
+            );
+            if (res && res.code !== "0000") {
+                this.pos.dialog.add(AlertDialog, {
+                    title: _t("Error Tax Free"),
+                    body: res.msg,
+                });
+                return;
+            }
+        }
+
+        // Guardar pedido + factura y navegar al recibo
+        await super.validateOrder(...arguments);
+
+        // Generar Tax Free
+        if (isTaxFree) {
+            const orm = this.env.services.orm;
+            let res = null;
+
+            try {
+                const orderId = (order.id && typeof order.id === "number" && order.id > 0)
+                    ? order.id
+                    : null;
+
+                res = orderId
+                    ? await orm.call("pos.order", "generate_taxfree_from_order_id", [orderId])
+                    : await orm.call("pos.order", "generate_taxfree_from_order_name", [order.name]);
+
+            } catch (e) {
+                res = { code: "EXCEPTION", msg: e.message || "Error de comunicación con el servidor Tax Free." };
             }
 
-            async validateOrder(isForceValidate) {
-                const order = this.currentOrder;
+            if (res && res.code === "0000") {
+                order.set_taxfree_pdf(res.check);
+                order.set_taxfree_number(res.number);
+            } else {
+                const errorMsg = (res && res.msg)
+                    ? String(res.msg).replace(/^'+|'+$/g, "").trim()
+                    : "Error desconocido.";
 
-                if (order.is_to_taxfree()) {
-                    const partner = order.get_partner();
-                    if (!partner) {
-                        Gui.showPopup('ErrorPopup', { title: 'Error', body: 'Seleccione un cliente' });
-                        return;
-                    }
+                order.error_taxfree = errorMsg;
 
-                    try {
-                        const res = await rpc.query({
-                            model: 'res.partner',
-                            method: 'test_tourist_id',
-                            args: [partner.id],
-                        });
-
-                        if (res && res.code !== '0000') {
-                            Gui.showPopup('ErrorPopup', { title: 'Error Tax Free', body: res.msg });
-                            return;
-                        }
-                    } catch (err) {
-                        console.error("Error en validación RPC:", err);
-                        Gui.showPopup('ErrorPopup', { title: 'Error de Conexión', body: 'No se pudo validar el turista.' });
-                        return;
-                    }
-                }
-                return super.validateOrder(isForceValidate);
+                // Mostrar el error directamente al pasar a la siguiente pantalla
+                this.pos.dialog.add(AlertDialog, {
+                    title: _t("Error Tax Free"),
+                    body: _t("Ha ocurrido un problema al crear el taxfree, por favor contacte con Travel Tax Free. Error: ") + errorMsg,
+                });
             }
+        }
+    },
 
-            click_taxfree() {
-                var order = this.env.pos.get_order();
-                this.button_taxfree(!order.is_to_taxfree());
-                if (!order.is_to_invoice()) {
-                    this.toggleIsToInvoice();
-                }
-            }
+    click_taxfree() {
+        const order = this.currentOrder;
+        const newState = !order.is_to_taxfree();
+        order.set_to_taxfree(newState);
+        if (newState && !order.isToInvoice()) {
+            order.setToInvoice(true);
+        }
+    },
 
-            button_taxfree(state) {
-                var order = this.env.pos.get_order();
-                order.set_to_taxfree(state);
-                $('.js_taxfree').toggleClass('highlight', state);
-            }
-
-            toggleIsToInvoice() {
-                super.toggleIsToInvoice();
-                var order = this.env.pos.get_order();
-                if (!order.is_to_invoice() && order.is_to_taxfree()) {
-                    this.button_taxfree(false);
-                }
-            }
-
-            get isTaxFreeActive() {
-                return this.currentOrder ? this.currentOrder.is_to_taxfree() : false;
-            }
-        };
-
-    Registries.Component.extend(PaymentScreen, PosInvoiceTaxfree);
+    toggleIsToInvoice() {
+        const order = this.currentOrder;
+        if (order.isToInvoice() && order.is_to_taxfree()) {
+            order.set_to_taxfree(false);
+        }
+        super.toggleIsToInvoice(...arguments);
+    },
 });
