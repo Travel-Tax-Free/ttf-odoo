@@ -45,7 +45,7 @@
             <field name="name">Descuentos</field>
             <field name="alias">DTO</field>
         </record>
-        <record id="taxfree_activity_descuentos" model="product.activity">
+        <record id="taxfree_activity_mascotas" model="product.activity">
             <field name="name">Mascotas</field>
             <field name="alias">MAS</field>
         </record>
