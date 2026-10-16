@@ -16,6 +16,11 @@ from odoo.addons.travel_tax_free.controllers.travel_client import TravelClient
 from odoo.addons.travel_tax_free.controllers.travel_request import TravelRequest
 
 PDF = base64.b64encode(b'%PDF-1.4 tax free de prueba').decode()
+# Estados miembros de la UE por su código ISO 3166-1, que es el que usa res.country.
+PAISES_UE = [
+    'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GR', 'HR', 'HU',
+    'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK',
+]
 ID_INEXISTENTE = 999999999
 CATALOGO = [
     'taxfree_activity_alimentacion',
@@ -583,3 +588,22 @@ class TestTravelTaxFree(AccountTestInvoicingCommon):
 
         with self.assertRaisesRegex(ValidationError, 'no tiene un taxfree asociado'):
             invoice.remove_taxfree()
+
+    # ------------------------------------------------------------------
+    # Países
+    # ------------------------------------------------------------------
+
+    ## TEST 27: Países de la UE no permitidos
+    #Tras _init_country ningún país de la UE tiene aeat_allow, y un país extracomunitario sí
+    def test_27_paises_ue_no_permitidos(self):
+        countries = self.env['res.country'].sudo()
+        # Como en una instalación nueva: ningún país permitido de partida.
+        countries.search([]).aeat_allow = False
+
+        countries._init_country()
+
+        self.assertEqual(len(countries.search([('code', 'in', PAISES_UE)])), 27)
+        for code in PAISES_UE:
+            with self.subTest(pais=code):
+                self.assertFalse(countries.search([('code', '=', code)]).aeat_allow)
+        self.assertTrue(self.country_jp.aeat_allow)
