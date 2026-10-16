@@ -59,7 +59,7 @@ class res_country(models.Model):
             {'name': 'Melilla', 'code': 'XL'}
         ]
 
-        paises_ue = ['DE','AT','BE','BG','CY','HR','DK','SK','SI','ES','EE','FI','FR','EL','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','CZ','RO','SE']
+        paises_ue = ['DE','AT','BE','BG','CY','HR','DK','SK','SI','ES','EE','FI','FR','EL','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','CZ','RO','SE']
 
         countries = self.env['res.country'].search([('code', 'in', [x['code'] for x in aeat_countries])])
 
