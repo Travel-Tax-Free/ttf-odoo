@@ -9,6 +9,7 @@
                 
                 <group string="Travel Tax Free" name="taxfree_group">
                     <field name="travel_user_id" placeholder="Seleccione usuario..."/>
+                    <field name="taxfree_activity_id" options="{'no_create': True}" placeholder="La de Ajustes si se deja vacía"/>
                 </group>
 
             </xpath>

@@ -12,10 +12,9 @@ class ProductActivity(models.Model):
     product_ids = fields.One2many(
         comodel_name="product.template",
         string="Productos",
-        tracking=True,
+        #tracking=True,
         inverse_name="activity_id",
     )
 
-    _sql_constraints = [
-        ('alias_unique', 'unique(alias)', 'Alias ya existe en la base de datos!'),
-    ]
+    #en odoo 19 ahora se declaran así
+    _alias_unique = models.Constraint('unique(alias)', 'Alias ya existe en la base de datos!')

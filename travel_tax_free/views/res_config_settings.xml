@@ -34,8 +34,8 @@
                             <field name="taxfree_format" required="1" />
                         </setting>
 
-                        <setting id="taxfree_category_setting" title="Categoría cliente creado en TPV">
-                            <field name="taxfree_category_id"/>
+                        <setting id="taxfree_category_setting" title="Actividad AEAT por defecto de los productos.">
+                          <field name="taxfree_activity_id" options="{'no_create': True}"/>
                         </setting>
 
                         <setting id="taxfree_email_setting" help="Email obligatorio en el cliente POS (requiere reiniciar POS)">

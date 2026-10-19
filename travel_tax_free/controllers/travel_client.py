@@ -21,6 +21,16 @@ class TravelClient:
         )
         self.serial = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_serial')
 
+    def _get_shop_activity(self, invoice):
+        """Actividad de las líneas cuyo producto no tiene: la del TPV del pedido y,
+        si no tiene, la de Ajustes."""
+        pos_orders = invoice.pos_order_ids if hasattr(invoice, 'pos_order_ids') else False
+        activity = pos_orders[0].config_id.taxfree_activity_id if pos_orders else self.env['product.activity']
+        if not activity:
+            activity_id = self.env['ir.config_parameter'].sudo().get_param('base.taxfree_activity_id')
+            activity = self.env['product.activity'].browse(int(activity_id) if activity_id else []).exists()
+        return activity
+
     def generate_taxfree(self, invoice):
         if not invoice:
             return Utils.generate_code(error='9986', msg='Factura no encontrada')
@@ -35,6 +45,8 @@ class TravelClient:
         invoice_check = invoice.test_taxfree_invoice()
         if invoice_check['code'] != '0000':
             return invoice_check
+        
+        shop_activity = self._get_shop_activity(invoice)
 
         check_lines = []
         for line in invoice.line_ids:
@@ -48,6 +60,9 @@ class TravelClient:
             }
             if self.serial and line.product_id.barcode:
                 check_line['serial'] = line.product_id.barcode
+            activity = line.product_id.activity_id or shop_activity
+            if activity:
+                check_line['activity'] = activity.alias
             check_lines.append(check_line)
 
         if not check_lines:
