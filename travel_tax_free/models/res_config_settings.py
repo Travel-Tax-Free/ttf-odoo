@@ -14,6 +14,7 @@ class ResConfigSettings(models.TransientModel):
     taxfree_attach = fields.Boolean(string='Adjuntar documento', config_parameter='base.taxfree_attach')
     taxfree_serial = fields.Boolean(string='Enviar número de serie', config_parameter='base.taxfree_serial')
     taxfree_category_id = fields.Many2one('res.partner.category', string='Categoria', config_parameter='base.taxfree_category_id')
+    taxfree_activity_id = fields.Many2one('product.activity', string='Actividad AEAT', config_parameter='base.taxfree_activity_id')
     taxfree_email_required = fields.Boolean(string='Email requerido', config_parameter='base.taxfree_email_required')
     taxfree_selectize_country = fields.Boolean(string='Selector paises', config_parameter='base.taxfree_selectize_country')
     #taxfree_users = fields.Many2many('travel.users', string="Usuarios")

@@ -17,6 +17,7 @@ Travel Tax Free Integration
     'data': [
     #    'security/groups.xml',
         'security/ir.model.access.csv',
+        'data/activity.xml',
         'data/data.xml',
         'views/res_partner_view.xml',
         'views/res_country_view.xml',
@@ -24,7 +25,7 @@ Travel Tax Free Integration
         'views/res_config_settings.xml',
         'views/travel_users_view.xml',
         'views/pos_config_view.xml',
-     #   'views/product_template_view.xml',
+        'views/product_template_view.xml',
         'wizard/send_ttf_wizard_view.xml',
     ],
     'qweb': [

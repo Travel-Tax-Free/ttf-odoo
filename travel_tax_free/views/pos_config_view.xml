@@ -15,6 +15,17 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-12 col-lg-6 o_setting_box pos_taxfree">
+                            <div class="o_setting_right_pane">
+                                <label for="taxfree_activity_id"/>
+                                <div class="text-muted">
+                                    La de Ajustes si se deja vacía
+                                </div>
+                                <div class="content-group mt16">
+                                    <field name="taxfree_activity_id" options="{'no_create': True}"/>
+                                </div>
+                            </div>
+                        </div>
                 </div>
 
             </field>

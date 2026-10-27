@@ -7,7 +7,7 @@ class ProductActivity(models.Model):
 
     name = fields.Char(string="Nombre", required=True)
     alias = fields.Char(string="Alias", size=3, required=True)
-    product_ids = fields.One2many(comodel_name="product.template", string="Productos", track_visibility='onchange', inverse_name="activity_id")
+    product_ids = fields.One2many(comodel_name="product.template", string="Productos", inverse_name="activity_id")
 
 
     _sql_constraints = [

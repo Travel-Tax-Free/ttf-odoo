@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="base.res_config_settings_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('settings')]" position="inside">
-                <div class="app_settings_block" data-string="Travel Tax Free" string="Travel Tax Free" data-key="taxfree">
+                <div class="app_settings_block" data-string="Travel Tax Free" string="Travel Tax Free" data-key="travel_tax_free">
                     <h2>Configuración para Travel Tax Free</h2>
                     <div class="row mt16 o_settings_container">
                         <div class="col-12 col-lg-6 o_setting_box">
@@ -98,6 +98,19 @@
 
                                     <div class="content-group mt16">
                                         <field name="taxfree_category_id"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <div>
+                                    <label string="Actividad AEAT" for="taxfree_activity_id"/>
+                                    <div class="text-muted">
+                                        Actividad AEAT por defecto de los productos.
+                                    </div>
+                                    <div class="content-group mt16">
+                                        <field name="taxfree_activity_id" options="{'no_create': True}"/>
                                     </div>
                                 </div>
                             </div>
