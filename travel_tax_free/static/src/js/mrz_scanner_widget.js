@@ -79,6 +79,70 @@ function checkDigit(field, digit) {
     }
 }
 
+/**
+ * Lee lo que devuelve el lector: un QR de Travel Tax Free (base64 terminado
+ * en '#') o la MRZ de un pasaporte. Lo usan el formulario del backend y la
+ * ficha de cliente del TPV.
+ *
+ * Devuelve {name, passport, iso2, birthDate} o {error} con el mensaje que se
+ * le enseña al usuario.
+ */
+export function parseMrz(opcion) {
+    let name, iso2, passport, dateStr;
+    const rawData = opcion.trim();
+
+    if (rawData.endsWith("#")) {
+        const campos = atob(rawData.slice(0, -1)).split("*");
+        name     = campos[0];
+        passport = campos[1];
+        iso2     = toIso2(campos[2]);
+        dateStr  = campos[3].replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3");
+
+    } else if (rawData.startsWith("P") && rawData.length >= 88) {
+        const control1 = rawData.substring(44, 53);
+        const cdigit1  = rawData.charAt(53);
+        const control2 = rawData.substring(57, 63);
+        const cdigit2  = rawData.charAt(63);
+
+        if (!checkDigit(control1, cdigit1) || !checkDigit(control2, cdigit2)) {
+            return { error: "Pasaporte/QR introducido erróneo (dígito de control inválido)" };
+        }
+
+        name = rawData.substring(5, 44)
+            .replace(/[<;]/g, " ")
+            .replace(/0/g, "O")
+            .replace(/1/g, "I")
+            .replace(/\s{2,}/g, " ")
+            .trim();
+
+        iso2     = toIso2(rawData.substring(2, 5));
+        passport = rawData.substring(44, 53).replace(/[<;]/g, "");
+
+        const yy   = parseInt(rawData.substring(57, 59));
+        const year = (yy > 30 ? 1900 : 2000) + yy;
+        dateStr    = `${year}-${rawData.substring(59, 61)}-${rawData.substring(61, 63)}`;
+
+    } else {
+        return { error: "Pasaporte/QR introducido erróneo" };
+    }
+
+    if (!name) { return { error: "No se pudo leer el nombre" }; }
+    if (!iso2)  { return { error: "Código de país no reconocido" }; }
+
+    const birthDate = DateTime.fromISO(dateStr);
+    if (!birthDate.isValid) { return { error: "Fecha no válida: " + dateStr }; }
+
+    return { name, passport, iso2, birthDate };
+}
+
+export function isEuCountry(iso2) {
+    return EU_COUNTRIES.includes(iso2);
+}
+
+export const EU_COUNTRY_ALERT =
+    "País no permitido para realizar Tax Free.\n" +
+    "Introduzca el país de residencia manualmente.";
+
 class MrzScannerWidget extends Component {
     static template = "travel_tax_free.MrzScannerWidget";
     static props = ["record", "readonly", "*"];
@@ -92,51 +156,9 @@ class MrzScannerWidget extends Component {
         if (!opcion) return;
 
         try {
-            let name, iso2, passport, dateStr;
-            const rawData = opcion.trim();
-
-            if (rawData.endsWith("#")) {
-                const campos = atob(rawData.slice(0, -1)).split("*");
-                name     = campos[0];
-                passport = campos[1];
-                iso2     = toIso2(campos[2]);
-                dateStr  = campos[3].replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3");
-
-            } else if (rawData.startsWith("P") && rawData.length >= 88) {
-                const control1 = rawData.substring(44, 53);
-                const cdigit1  = rawData.charAt(53);
-                const control2 = rawData.substring(57, 63);
-                const cdigit2  = rawData.charAt(63);
-
-                if (!checkDigit(control1, cdigit1) || !checkDigit(control2, cdigit2)) {
-                    alert("Pasaporte/QR introducido erróneo (dígito de control inválido)");
-                    return;
-                }
-
-                name = rawData.substring(5, 44)
-                    .replace(/[<;]/g, " ")
-                    .replace(/0/g, "O")
-                    .replace(/1/g, "I")
-                    .replace(/\s{2,}/g, " ")
-                    .trim();
-
-                iso2     = toIso2(rawData.substring(2, 5));
-                passport = rawData.substring(44, 53).replace(/[<;]/g, "");
-
-                const yy   = parseInt(rawData.substring(57, 59));
-                const year = (yy > 30 ? 1900 : 2000) + yy;
-                dateStr    = `${year}-${rawData.substring(59, 61)}-${rawData.substring(61, 63)}`;
-
-            } else {
-                alert("Pasaporte/QR introducido erróneo");
-                return;
-            }
-
-            if (!name) { alert("No se pudo leer el nombre"); return; }
-            if (!iso2)  { alert("Código de país no reconocido"); return; }
-
-            const birthDate = DateTime.fromISO(dateStr);
-            if (!birthDate.isValid) { alert("Fecha no válida: " + dateStr); return; }
+            const leido = parseMrz(opcion);
+            if (leido.error) { alert(leido.error); return; }
+            const { name, passport, iso2, birthDate } = leido;
 
             const countries = await this.orm.searchRead(
                 "res.country",
@@ -151,16 +173,14 @@ class MrzScannerWidget extends Component {
             };
 
             if (country) {
-                const countryObj = { id: country.id, display_name: country.display_name };
+                // En Odoo 17 un many2one se actualiza con la tupla [id, nombre].
+                const countryObj = [country.id, country.display_name];
 
                 if (EU_COUNTRIES.includes(iso2)) {
                     updates.passport_country_id = countryObj;
                     updates.country_id           = false;
                     updates.same_country         = false;
-                    setTimeout(() => alert(
-                        "País no permitido para realizar Tax Free.\n" +
-                        "Introduzca el país de residencia manualmente."
-                    ), 200);
+                    setTimeout(() => alert(EU_COUNTRY_ALERT), 200);
                 } else {
                     updates.passport_country_id = countryObj;
                     updates.country_id           = countryObj;

@@ -16,5 +16,6 @@ class ProductActivity(models.Model):
         inverse_name="activity_id",
     )
 
-    #en odoo 19 ahora se declaran así
-    _alias_unique = models.Constraint('unique(alias)', 'Alias ya existe en la base de datos!')
+    _sql_constraints = [
+        ('alias_unique', 'unique(alias)', 'Alias ya existe en la base de datos!'),
+    ]

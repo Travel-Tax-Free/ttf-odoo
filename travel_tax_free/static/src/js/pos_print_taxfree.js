@@ -1,26 +1,25 @@
 /** @odoo-module **/
 
 import { ReceiptScreen } from "@point_of_sale/app/screens/receipt_screen/receipt_screen";
+import { ErrorPopup } from "@point_of_sale/app/errors/popups/error_popup";
 import { patch } from "@web/core/utils/patch";
 import { _t } from "@web/core/l10n/translation";
-import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 
 patch(ReceiptScreen.prototype, {
-    // ELIMINADO: get currentOrder() NO debe sobreescribirse.
-    // El getter nativo de Odoo 19 ya funciona correctamente:
-    // this.pos.models["pos.order"].getBy("uuid", this.props.orderUuid)
+    // En Odoo 17 currentOrder lo fija el setup() de ReceiptScreen
+    // (this.pos.get_order()); no hace falta sobrescribirlo.
 
     async click_print_taxfree() {
         const order = this.currentOrder;
         if (!order) return;
 
         if (order.error_taxfree) {
-            this.pos.dialog.add(AlertDialog, {
+            this.env.services.popup.add(ErrorPopup, {
                 title: _t("Error Tax Free"),
                 body: order.error_taxfree,
             });
         } else if (!order.get_taxfree_pdf()) {
-            this.pos.dialog.add(AlertDialog, {
+            this.env.services.popup.add(ErrorPopup, {
                 title: _t("Error Tax Free"),
                 body: _t(
                     "La factura se ha creado correctamente, pero ha habido un error " +
@@ -44,7 +43,7 @@ patch(ReceiptScreen.prototype, {
                 setTimeout(() => window.URL.revokeObjectURL(link.href), 100);
             } catch (err) {
                 console.error("Error al procesar el PDF del Tax Free:", err);
-                this.pos.dialog.add(AlertDialog, {
+                this.env.services.popup.add(ErrorPopup, {
                     title: _t("Error de descarga"),
                     body: _t("No se pudo generar el archivo PDF para la descarga."),
                 });

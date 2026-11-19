@@ -1,4 +1,4 @@
-Integración ODOO 19 con Travel Tax Free
+Integración ODOO 17 con Travel Tax Free
 =======================================
 
 Requisitos

@@ -26,11 +26,11 @@
     <record id="ttf_users_tree_view" model="ir.ui.view">
         <field name="name">ttf_users_list</field> <field name="model">travel.users</field>
         <field name="arch" type="xml">
-            <list string="Travel users">
+            <tree string="Travel users">
                 <field name="name"/>
                 <field name="default" widget="boolean_toggle"/> <field name="user" />
                 <field name="pos_ids" widget="many2many_tags"/>
-            </list>
+            </tree>
         </field>
     </record>
 </odoo>

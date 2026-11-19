@@ -61,7 +61,11 @@ class res_partner(models.Model):
         else:
             return self._generate_code()
 
-    def _load_pos_data_fields(self, config):
-        fields = super()._load_pos_data_fields(config)
-        fields += ['date_birthdate', 'passport', 'passport_country_id', 'same_country']
-        return fields
+
+class pos_session(models.Model):
+    _inherit = 'pos.session'
+
+    def _loader_params_res_partner(self):
+        result = super()._loader_params_res_partner()
+        result['search_params']['fields'] += ['date_birthdate', 'passport', 'passport_country_id', 'same_country']
+        return result

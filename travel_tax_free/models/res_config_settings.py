@@ -23,8 +23,8 @@ class ResConfigSettings(models.TransientModel):
             'name': 'Travel Users',
             'type': 'ir.actions.act_window',
             'res_model': 'travel.users',
-            'view_mode': 'list,form',
-            'views': [(False, 'list'), (False, 'form')],
+            'view_mode': 'tree,form',
+            'views': [(False, 'tree'), (False, 'form')],
             'target': 'current',
             'context': self._context,
         }

@@ -305,7 +305,9 @@ class TestTravelTaxFree(AccountTestInvoicingCommon):
     def test_11_asignar_categoria_sin_gestionarlas(self):
         user = new_test_user(
             self.env, login='ttf_productos',
-            groups='base.group_user,product.group_product_manager',
+            # En Odoo 17 no existe product.group_product_manager: quien edita
+            # productos sin ser administrador es el responsable del TPV.
+            groups='base.group_user,point_of_sale.group_pos_manager',
         )
         template = self.product_a.product_tmpl_id.with_user(user)
 

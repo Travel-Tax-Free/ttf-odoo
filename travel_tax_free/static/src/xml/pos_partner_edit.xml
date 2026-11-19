@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-inherit="point_of_sale.PartnerDetailsEdit" t-inherit-mode="extension">
+        <xpath expr="//input[@name='name']" position="after">
+            <button type="button" class="btn btn-secondary text-nowrap"
+                    t-on-click="scanPassport"
+                    title="Escanear pasaporte o QR Tax Free">
+                <i class="fa fa-qrcode me-1"/> Escanear pasaporte/QR
+            </button>
+        </xpath>
+
+        <xpath expr="//div[hasclass('partner-details-box')]" position="inside">
+            <div class="partner-detail col">
+                <label class="form-label label" for="passport">Pasaporte</label>
+                <input class="detail form-control" id="passport" name="passport"
+                       t-model="changes.passport" placeholder="Pasaporte"/>
+            </div>
+            <div class="partner-detail col">
+                <label class="form-label label" for="date_birthdate">Fecha de nacimiento</label>
+                <input type="date" class="detail form-control" id="date_birthdate" name="date_birthdate"
+                       t-model="changes.date_birthdate"/>
+            </div>
+            <div class="partner-detail col d-flex align-items-end">
+                <div class="form-check mb-2">
+                    <input type="checkbox" class="form-check-input" id="same_country" name="same_country"
+                           t-model="changes.same_country"/>
+                    <label class="form-check-label" for="same_country">Mismo país de pasaporte</label>
+                </div>
+            </div>
+            <div t-if="!changes.same_country" class="partner-detail col">
+                <label class="form-label label" for="passport_country">País de pasaporte</label>
+                <select class="detail form-select" id="passport_country" name="passport_country_id"
+                        t-model="changes.passport_country_id">
+                    <option value="">Ninguno</option>
+                    <t t-foreach="pos.countries" t-as="country" t-key="country.id">
+                        <option t-att-value="country.id">
+                            <t t-esc="country.name"/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

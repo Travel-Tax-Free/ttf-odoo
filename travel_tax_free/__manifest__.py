@@ -43,9 +43,11 @@ Travel Tax Free Integration
             "travel_tax_free/static/src/js/pos_print_taxfree.js",
             "travel_tax_free/static/src/js/iso3166.js",
             "travel_tax_free/static/src/js/mrz_scanner_widget.js",
+            "travel_tax_free/static/src/js/pos_partner_edit.js",
             "travel_tax_free/static/src/xml/pos_invoice_taxfree.xml",
             "travel_tax_free/static/src/xml/pos_print_taxfree.xml",
             "travel_tax_free/static/src/xml/mrz_scanner_widget.xml",
+            "travel_tax_free/static/src/xml/pos_partner_edit.xml",
         ],
     },
 }

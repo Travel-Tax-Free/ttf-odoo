@@ -1,9 +1,9 @@
 /** @odoo-module **/
 
-import { PosOrder } from "@point_of_sale/app/models/pos_order";
+import { Order } from "@point_of_sale/app/store/models";
 import { patch } from "@web/core/utils/patch";
 
-patch(PosOrder.prototype, {
+patch(Order.prototype, {
     setup() {
         super.setup(...arguments);
         this.to_taxfree     = this.to_taxfree     || false;
@@ -12,16 +12,10 @@ patch(PosOrder.prototype, {
         this.error_taxfree  = this.error_taxfree  || false;
     },
 
-    // Evitar que al asignar cliente se aplique posición fiscal y elimine el IVA
-    setPartner(partner) {
-        super.setPartner(...arguments);
-        if (this.fiscal_position_id) {
-            this.fiscal_position_id = false;
-            for (const line of this.lines || []) {
-                if (typeof line.setQuantity === "function") {
-                    line.setQuantity(line.qty);
-                }
-            }
+    set_partner(partner) {
+        super.set_partner(...arguments);
+        if (this.fiscal_position) {
+            this.set_fiscal_position(false);
         }
     },
 
@@ -32,13 +26,13 @@ patch(PosOrder.prototype, {
     set_taxfree_number(val) { this.taxfree_number = val; },
     get_taxfree_number()    { return this.taxfree_number; },
 
-    serialize() {
-        const json = super.serialize(...arguments);
+    export_as_JSON() {
+        const json = super.export_as_JSON(...arguments);
         json.to_taxfree = this.to_taxfree;
         return json;
     },
     init_from_JSON(json) {
-        super.init_from_JSON?.(...arguments);
+        super.init_from_JSON(...arguments);
         this.to_taxfree = json.to_taxfree || false;
-    }
+    },
 });
